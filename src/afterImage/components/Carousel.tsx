@@ -89,7 +89,7 @@ const Carousel: React.FC<CarouselProps> = ({ images }) => {
   };
 
   // Wheel handling for scrolling
-  const wheelTimeout = useRef<NodeJS.Timeout | null>(null);
+  const wheelTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleWheel = (e: React.WheelEvent) => {
     const delta = e.deltaY || e.deltaX;

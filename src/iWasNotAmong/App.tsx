@@ -50,7 +50,7 @@ const ImageSegment = ({ url, index, segments, radius, height }: { url: string, i
     uRadius: { value: radius }
   }), [radius]);
 
-  const onBeforeCompile = (shader: THREE.Shader) => {
+  const onBeforeCompile = (shader: any) => {
     shader.uniforms.uRadius = uniforms.uRadius;
     shader.vertexShader = `
       uniform float uRadius;
