@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Thing To Do Is To Do Nothing</title>
+    <!-- Use a rough stencil-like font -->
+    <link href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #e5e5e5;
+        /* Concrete wall texture background */
+        background-image: 
+          radial-gradient(#c8c8c8 1px, transparent 1px),
+          radial-gradient(#d0d0d0 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      #root {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      /* Global Header Overrides for Experiment */
+      .suruchi-corner-item {
+        position: absolute;
+        top: 76px;
+        left: 84px;
+        font-size: 68px;
+        font-weight: 400;
+        line-height: 1;
+        font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: rgba(5, 5, 5, 0.82);
+        opacity: 0.84;
+        z-index: 1000;
+        pointer-events: none;
+      }
+      .suruchi-word {
+        display: inline-block;
+        border-bottom: 2px solid currentColor;
+        padding-bottom: 8px;
+        margin-bottom: 6px;
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+        pointer-events: auto;
+      }
+      .pg-back {
+        position: fixed;
+        left: 84px;
+        bottom: 34px;
+        z-index: 1000;
+        color: rgba(5, 5, 5, 0.64);
+        font-size: 12px;
+        text-decoration: none;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+        transition: opacity 180ms ease;
+      }
+      .pg-back:hover { opacity: 1; }
+      
+      .project-subtitle {
+        font-size: 16px;
+        margin-top: 16px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(5, 5, 5, 0.7);
+        font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SVG Filter for Graffiti Roughness -->
+    <svg width="0" height="0" style="position: absolute;">
+      <defs>
+        <filter id="graffiti" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+          <feComponentTransfer in="noise" result="alphaNoise">
+            <feFuncA type="linear" slope="3" intercept="-1" />
+          </feComponentTransfer>
+          <feComposite operator="in" in="displaced" in2="alphaNoise" result="roughened" />
+          <feMerge>
+            <feMergeNode in="roughened" />
+          </feMerge>
+        </filter>
+        <filter id="graffiti-simple" x="-20%" y="-20%" width="140%" height="140%">
+           <feTurbulence type="fractalNoise" baseFrequency="0.1" result="noise" />
+           <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+
+    <div class="suruchi-corner-item">
+      <div style="pointer-events: auto;">
+        <a class="suruchi-word" href="/">Suruchi</a><br />
+        <a class="suruchi-word" href="/">Choksi</a>
+      </div>
+      <div class="project-subtitle">THE THING TO DO IS TO DO NOTHING</div>
+    </div>
+    
+    <a class="pg-back" href="/poet.html" aria-label="Back to Poet">← Poet</a>
+
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

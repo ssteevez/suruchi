@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poet — Suruchi Choksi</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+        background: #050506;
+        color: rgba(245, 245, 245, 0.86);
+        font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next",
+          "Helvetica Neue", Arial, sans-serif;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        align-items: start;
+        padding: 160px clamp(32px, 7vw, 96px) 120px;
+      }
+
+      .header-title {
+        position: absolute;
+        top: 76px;
+        left: 84px;
+        color: rgba(245, 245, 245, 0.82);
+        font-size: 34px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        z-index: 100;
+      }
+      
+      .back-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        color: rgba(245, 245, 245, 0.7);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        text-decoration: underline;
+        padding: 8px 0;
+        transition: color 180ms ease, opacity 180ms ease;
+        z-index: 100;
+      }
+      .back-btn:hover {
+        color: white;
+        opacity: 0.9;
+      }
+
+      .thumbnails-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 86px;
+        width: 100%;
+        max-width: 1800px;
+        margin: 0 auto;
+      }
+      @media (max-width: 1024px) {
+        .thumbnails-container {
+          grid-template-columns: 1fr;
+          gap: 64px;
+        }
+      }
+
+      .thumbnail-card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        text-decoration: none;
+        color: rgba(245, 245, 245, 0.9);
+        transition: transform 300ms ease, opacity 300ms ease;
+      }
+
+      .thumbnail-card:hover {
+        transform: translateY(-6px);
+        opacity: 0.8;
+      }
+
+      .thumbnail-image {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        margin-bottom: 24px;
+        background-color: rgba(255, 255, 255, 0.03);
+      }
+
+      .thumbnail-video-wrap {
+        width: 100%;
+        aspect-ratio: 4/3;
+        background-color: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(245, 245, 245, 0.2);
+        border-radius: 4px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+
+      .thumbnail-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200%;
+        height: 200%;
+        transform: scale(0.5);
+        transform-origin: top left;
+        border: none;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .thumbnail-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        text-align: right;
+      }
+
+      .thumbnail-title {
+        font-size: clamp(16px, 1.8vw, 24px);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid currentColor;
+        padding-bottom: 4px;
+        margin-bottom: 12px;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      
+      .thumbnail-details {
+        font-size: 14px;
+        letter-spacing: 0.08em;
+        line-height: 1.6;
+        opacity: 0.7;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      
+      .buy-now {
+        color: inherit;
+        text-decoration: underline;
+        cursor: pointer;
+        display: inline-block;
+        pointer-events: auto;
+      }
+      .buy-now:hover {
+        opacity: 1;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header-title">POET</div>
+    <main>
+      <div class="thumbnails-container">
+        <a class="thumbnail-card" href="/experiments/book-engine/index.html">
+          <img class="thumbnail-image" src="/images/Book/cover.jpg" alt="Emptying the Void" />
+          <div class="thumbnail-info">
+            <span class="thumbnail-title">Emptying the Void</span>
+            <div class="thumbnail-details">
+              <span>2024</span>
+              <span>Book</span>
+              <span class="buy-now">Buy Now</span>
+            </div>
+          </div>
+        </a>
+        <a class="thumbnail-card" href="/experiments/euphemisims/">
+          <div class="thumbnail-video-wrap">
+            <iframe class="thumbnail-video" src="/experiments/euphemisims/work.html?slug=the-thing-to-do&thumb=1" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+          </div>
+          <div class="thumbnail-info">
+            <span class="thumbnail-title">Archive of Unthought Knowns</span>
+            <div class="thumbnail-details">
+              <span>2024</span>
+              <span>Mixed Media, 3 Variable Editions</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </main>
+    <a href="/" class="back-btn">HOME</a>
+  </body>
+</html>

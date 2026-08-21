@@ -1,0 +1,22 @@
+# Netlify configuration.
+#
+# IMPORTANT — deploy method:
+# The large media assets (public/video*.mp4, public/images/) are gitignored,
+# so a git-connected Netlify build would produce a site with missing videos
+# and images. Deploy from this machine instead, after a local build:
+#
+#   npm run build
+#   npx netlify deploy --prod --dir=dist
+#
+# Set VITE_SURUCHI_ADMIN_PASSWORD in the local .env (never commit it).
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Headers are also defined in public/_headers (copied into dist/), which is
+# honored for CLI and drag-and-drop deploys. Kept here too for git deploys.
+[[headers]]
+  for = "/suruchi-admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

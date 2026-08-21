@@ -1,0 +1,76 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #050505;
+  color: #f0f0f0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  overflow: hidden;
+}
+
+.app-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Framer motion handles most of the layout, we just need basic constraints */
+.carousel-viewport {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  perspective: 1000px;
+}
+
+/* ── Typography styles ── */
+.header-title {
+  position: absolute;
+  top: 76px;
+  left: 84px;
+  color: rgba(245, 245, 245, 0.82);
+  font-size: clamp(20px, 3vw, 34px);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  pointer-events: none;
+  line-height: 1.25;
+  margin: 0;
+  font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+  z-index: 100;
+}
+
+.back-btn {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  color: rgba(245, 245, 245, 0.7);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  padding: 8px 0;
+  transition: color 180ms ease, opacity 180ms ease;
+  z-index: 100;
+  pointer-events: auto;
+  font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+}
+.back-btn:hover {
+  color: white;
+  opacity: 0.9;
+}
+
+@media (max-width: 900px) {
+  .header-title { left: 30px; top: 66px; }
+  .back-btn { left: 30px; }
+}

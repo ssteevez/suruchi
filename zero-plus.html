@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zero Plus Anything is a World</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      html, body {
+        height: 100%;
+        background: #08080b;
+        color: rgba(245, 245, 245, 0.82);
+        font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next",
+                     "Helvetica Neue", Arial, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        overflow: hidden;
+      }
+
+      #blob-a, #blob-b {
+        position: fixed;
+        width: 170vw;
+        height: 170vw;
+        border-radius: 50%;
+        opacity: 0.30;
+        filter: blur(92px);
+        transform: translate(-50%, -50%);
+        will-change: background;
+        pointer-events: none;
+        z-index: 0;
+      }
+      #blob-a { top: 34%; left: 35%; }
+      #blob-b { top: 66%; left: 68%; }
+
+      .back-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        color: rgba(245, 245, 245, 0.7);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        text-decoration: underline;
+        padding: 8px 0;
+        transition: color 180ms ease, opacity 180ms ease;
+        z-index: 100;
+      }
+      .back-btn:hover {
+        color: white;
+        opacity: 0.9;
+      }
+
+      .header-container {
+        position: absolute;
+        top: 76px;
+        left: 84px;
+        max-width: 440px;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .header-title {
+        color: rgba(245, 245, 245, 0.82);
+        font-size: 34px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        pointer-events: none;
+        line-height: 1.25;
+      }
+
+      .header-desc {
+        color: rgba(245, 245, 245, 0.75);
+        font-size: 15px;
+        line-height: 1.6;
+        text-transform: none;
+        letter-spacing: 0.04em;
+        pointer-events: auto;
+      }
+      .header-desc p {
+        margin-bottom: 1em;
+      }
+
+      #carousel-scene {
+        position: fixed;
+        top: 8vh;
+        right: 6vw;
+        width: min(54vw, 760px);
+        height: 84vh;
+        z-index: 10;
+        perspective: 760px;
+        perspective-origin: 50% 50%;
+        pointer-events: none;
+      }
+
+      #carousel-ring {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 0;
+        height: 0;
+        transform-style: preserve-3d;
+        pointer-events: auto;
+      }
+
+      .carousel-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform-style: preserve-3d;
+        backface-visibility: visible;
+        -webkit-backface-visibility: visible;
+        will-change: transform, opacity, filter;
+      }
+
+      /* Multi-coloured bloom layer — sits behind the artwork, larger than it,
+         heavily blurred. Not clipped, so the glow spreads into the scene. */
+      .card-glow {
+        position: absolute;
+        inset: -16%;
+        border-radius: 30px;
+        filter: blur(50px);
+        opacity: 0;
+        transition: opacity 240ms ease;
+        pointer-events: none;
+        z-index: 0;
+        will-change: opacity, background;
+      }
+
+      /* The artwork itself — styled to look like a framed canvas */
+      .card-inner {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: #fdfdfd; /* White mount/matting */
+        border: 5px solid #d4d4d6; /* Outer frame border */
+        box-shadow: 
+          inset 0 0 0 1px rgba(0,0,0,0.05), /* Subtle inner edge of frame */
+          -6px 10px 20px rgba(0,0,0,0.6); /* Drop shadow on wall for 3D perception */
+        box-sizing: border-box;
+        padding: 6%; /* Equal mount on all 4 sides */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 2px;
+      }
+
+      .card-inner img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover; /* Fill the mat perfectly */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25); /* Shadow of the canvas on the mount */
+      }
+
+      .card-fog {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: rgba(6, 6, 8, 0.7);
+        opacity: 0;
+      }
+
+      #lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        display: none;
+        background: rgba(0, 0, 0, 0.84);
+        backdrop-filter: blur(6px);
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+      }
+      #lightbox.open { display: flex; }
+
+      .lightbox-panel {
+        width: min(1100px, 96vw);
+        display: grid;
+        grid-template-columns: minmax(280px, 56%) minmax(260px, 44%);
+        gap: 28px;
+        align-items: start;
+      }
+
+      #lightbox-img {
+        width: 100%;
+        max-height: 88vh;
+        object-fit: contain;
+        border-radius: 14px;
+      }
+
+      .lightbox-copy {
+        color: rgba(245, 245, 245, 0.86);
+        text-transform: none;
+        letter-spacing: normal;
+      }
+      #lightbox-title {
+        margin: 0 0 10px 0;
+        font-size: 32px;
+        font-weight: 500;
+      }
+      #lightbox-meta {
+        margin: 0 0 14px 0;
+        color: rgba(245, 245, 245, 0.62);
+      }
+      #lightbox-caption {
+        margin: 0;
+        color: rgba(245, 245, 245, 0.72);
+        line-height: 1.5;
+      }
+      #lightbox-close {
+        margin-top: 24px;
+        border: 1px solid rgba(245, 245, 245, 0.34);
+        background: transparent;
+        color: rgba(245, 245, 245, 0.88);
+        padding: 10px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      @media (max-width: 900px) {
+        .header-container { left: 30px; top: 66px; max-width: calc(100vw - 60px); }
+        .header-title { font-size: 24px; }
+        #carousel-scene {
+          right: 0;
+          width: 100vw;
+          height: 86vh;
+          top: 10vh;
+        }
+        .lightbox-panel { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="blob-a"></div>
+    <div id="blob-b"></div>
+
+    <div class="header-container">
+      <div class="header-title">
+        Zero plus anything<br>is a world
+      </div>
+      
+      <div class="header-desc">
+        <p>Continuing my contemplation of impermanence, interconnectedness and no self, these works are an exploration of how form, existence and meaning emerge. Our reality is constantly generated by the arising, abiding and ceasing of phenomena. Even the slightest addition or change generates a new reality, a different presence, a world that is constantly in flux.</p>
+        
+        <p>
+          When this is, that is<br>
+          This arising, that arises<br>
+          When this is not, that is not<br>
+          This ceasing, that ceases
+        </p>
+
+        <p>These works were created in response to 'pareidolia', my tendency to perceive patterns, shapes, especially faces on myriad surfaces in random or accidental arrangements of shifting shapes and lines. The seemingly chaotic juxtaposition of bodies in the paintings, the push and pull of shapes, scale, and perspectives all speak of this.</p>
+      </div>
+    </div>
+
+    <a class="back-btn" href="/painter.html">BACK</a>
+
+    <div id="carousel-scene">
+      <div id="carousel-ring"></div>
+    </div>
+
+    <div id="lightbox" aria-hidden="true">
+      <div class="lightbox-panel">
+        <img id="lightbox-img" src="" alt="" />
+        <div class="lightbox-copy">
+          <h2 id="lightbox-title"></h2>
+          <p id="lightbox-meta"></p>
+          <p id="lightbox-caption"></p>
+          <button id="lightbox-close" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/zeroPlus/main.ts"></script>
+  </body>
+</html>

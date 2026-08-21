@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painter — Suruchi Choksi</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+        background: #050506;
+        color: rgba(245, 245, 245, 0.86);
+        font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next",
+          "Helvetica Neue", Arial, sans-serif;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        align-items: start;
+        padding: 160px clamp(32px, 7vw, 96px) 120px;
+      }
+
+      .header-title {
+        position: absolute;
+        top: 76px;
+        left: 84px;
+        color: rgba(245, 245, 245, 0.82);
+        font-size: 34px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        z-index: 100;
+      }
+      
+      .back-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        color: rgba(245, 245, 245, 0.7);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        text-decoration: underline;
+        padding: 8px 0;
+        transition: color 180ms ease, opacity 180ms ease;
+        z-index: 100;
+      }
+      .back-btn:hover {
+        color: white;
+        opacity: 0.9;
+      }
+
+      .thumbnails-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 48px;
+        width: 100%;
+        max-width: 1200px;
+      }
+      @media (max-width: 1024px) {
+        .thumbnails-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 640px) {
+        .thumbnails-container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .thumbnail-card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        text-decoration: none;
+        color: rgba(245, 245, 245, 0.9);
+        transition: transform 300ms ease, opacity 300ms ease;
+      }
+
+      .thumbnail-card:hover {
+        transform: translateY(-6px);
+        opacity: 0.8;
+      }
+
+      .thumbnail-image {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        margin-bottom: 20px;
+        background-color: rgba(255, 255, 255, 0.03);
+      }
+
+      .thumbnail-title {
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-bottom: 1px solid currentColor;
+        padding-bottom: 8px;
+        width: fit-content;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header-title">PAINTER</div>
+    <main>
+      <div class="thumbnails-container">
+        <a class="thumbnail-card" href="/experiments/beach-shooting/">
+          <img class="thumbnail-image" src="/images/poet/thumbnails/sthithapragya.jpg" alt="Sthithapragya" />
+          <span class="thumbnail-title">Sthithapragya</span>
+        </a>
+        <a class="thumbnail-card" href="/zero-plus.html">
+          <img class="thumbnail-image" src="/images/painter/zero-plus/IMG_0695-2400.jpg" alt="Zero Plus Anything is a World" />
+          <span class="thumbnail-title">Zero Plus Anything is a World</span>
+        </a>
+        <a class="thumbnail-card" href="/after-image.html">
+          <img class="thumbnail-image" src="/images/after-image/AI_2-2400.jpg" alt="After Image" />
+          <span class="thumbnail-title">After Image</span>
+        </a>
+        <a class="thumbnail-card" href="/experiments/photograms/">
+          <img class="thumbnail-image" src="/images/painter/photograms/6O8B9657-2400.jpg" alt="Photograms" />
+          <span class="thumbnail-title">Photograms</span>
+        </a>
+        <a class="thumbnail-card" href="/i-was-not-among.html">
+          <img class="thumbnail-image" src="/images/painter/i-was-not-among/IMG_1373.jpg" alt="I Was Not Among My Kind" />
+          <span class="thumbnail-title">I Was Not Among My Kind</span>
+        </a>
+      </div>
+    </main>
+    <a href="/" class="back-btn">HOME</a>
+  </body>
+</html>

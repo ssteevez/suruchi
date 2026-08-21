@@ -1,0 +1,202 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+  background: #050506;
+  color: rgba(245, 245, 245, 0.86);
+  font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next",
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+.back-btn {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  color: rgba(245, 245, 245, 0.7);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  padding: 8px 0;
+  transition: color 180ms ease, opacity 180ms ease;
+  z-index: 100;
+}
+.back-btn:hover {
+  color: white;
+  opacity: 0.9;
+}
+
+.next-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  color: rgba(245, 245, 245, 0.7);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  padding: 8px 0;
+  transition: color 180ms ease, opacity 180ms ease;
+  z-index: 100;
+}
+.next-btn:hover {
+  color: white;
+  opacity: 0.9;
+}
+
+
+
+/* —— Hub —— */
+.hub-main {
+  min-height: 100vh;
+  display: grid;
+  align-content: center;
+  padding: 72px clamp(32px, 7vw, 96px);
+  gap: 48px;
+}
+
+.hub-header {
+  display: grid;
+  gap: 18px;
+  max-width: 640px;
+}
+
+.hub-header h1 {
+  position: absolute;
+  top: 76px;
+  left: 84px;
+  color: rgba(245, 245, 245, 0.82);
+  font-size: 34px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  z-index: 100;
+}
+
+.work-list {
+  list-style: none;
+  display: grid;
+  gap: 28px;
+  max-width: 720px;
+}
+
+.work-list a {
+  display: block;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(245, 245, 245, 0.14);
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: border-color 200ms ease, opacity 200ms ease;
+}
+
+.work-list a:hover {
+  border-color: rgba(245, 245, 245, 0.42);
+  opacity: 1;
+}
+
+/* —— Work shell —— */
+.work-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 96px clamp(28px, 6vw, 80px);
+}
+
+.work-stage {
+  width: min(720px, 100%);
+  min-height: 40vh;
+  display: grid;
+  place-items: center;
+}
+
+.work-error {
+  color: rgba(245, 245, 245, 0.5);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Hub Grid Additions */
+.thumbnails-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 64px;
+}
+
+@media (max-width: 1024px) {
+  .thumbnails-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .thumbnails-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.thumbnail-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-decoration: none;
+  color: rgba(245, 245, 245, 0.9);
+  transition: transform 300ms ease, opacity 300ms ease;
+}
+
+.thumbnail-card:hover {
+  transform: translateY(-6px);
+  opacity: 0.8;
+}
+
+.thumbnail-video-wrap {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(245, 245, 245, 0.2);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.thumbnail-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%; /* Scale up by 2 to downscale by 0.5 */
+  height: 200%;
+  transform: scale(0.5);
+  transform-origin: top left;
+  border: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+body.is-thumbnail {
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+body.is-thumbnail .back-btn,
+body.is-thumbnail .next-btn {
+  display: none !important;
+}

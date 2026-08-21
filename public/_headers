@@ -1,0 +1,10 @@
+# Netlify headers file — copied into dist/ by Vite from public/.
+# Prevent search engines from indexing the admin panel.
+/suruchi-admin/*
+  X-Robots-Tag: noindex, nofollow
+
+# Basic hardening for the whole site.
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer

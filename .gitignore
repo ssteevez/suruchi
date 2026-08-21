@@ -1,0 +1,54 @@
+# macOS extended attribute sidecar files
+._*
+.AppleDouble
+.LSOverride
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment files — contain the admin preview password; never commit
+.env
+.env.*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Unused 170MB master video — exceeds GitHub's 100MB file limit, not referenced by code
+public/video.mp4
+.pydeps/
+scratch/
+
+# Local Netlify folder
+.netlify
+
+# Machine-specific local tool settings
+.claude/settings.local.json
+
+# Admin data exports — contain review threads & project notes, never commit
+suruchi-*backup*.json
+suruchi-projects-*.json
+
+# Supabase CLI temp (if ever used)
+supabase/.temp/
+
+# Raw high-res image originals (never commit or export)
+raw-images/
