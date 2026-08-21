@@ -13,14 +13,21 @@ for (const work of WORKS) {
   const frameWrap = document.createElement('div');
   frameWrap.className = 'thumbnail-video-wrap';
   
-  const iframe = document.createElement('iframe');
-  iframe.src = `./work.html?slug=${encodeURIComponent(work.slug)}&thumb=1`;
-  iframe.className = 'thumbnail-video';
-  iframe.tabIndex = -1;
-  iframe.setAttribute('aria-hidden', 'true');
-  iframe.setAttribute('loading', 'lazy');
+  const img = document.createElement('img');
+  img.src = `/images/poet/thumbnails/${work.slug}.jpg`;
+  img.className = 'thumbnail-video'; // We can reuse the class for now
+  img.style.width = '100%';
+  img.style.height = '100%';
+  img.style.objectFit = 'cover';
+  img.style.transform = 'none'; // Overriding the scale(0.5) from iframe CSS
+  img.alt = work.title;
+  
+  // Fallback to a grey square if the image isn't uploaded yet
+  img.onerror = () => {
+    img.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%25%22%20height%3D%22100%25%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23222%22%20%2F%3E%3C%2Fsvg%3E';
+  };
 
-  frameWrap.appendChild(iframe);
+  frameWrap.appendChild(img);
   card.appendChild(frameWrap);
 
   const title = document.createElement('span');
