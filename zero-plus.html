@@ -136,25 +136,40 @@
         position: absolute;
         inset: 0;
         z-index: 1;
-        background: #fdfdfd; /* White mount/matting */
-        border: 5px solid #d4d4d6; /* Outer frame border */
-        box-shadow: 
-          inset 0 0 0 1px rgba(0,0,0,0.05), /* Subtle inner edge of frame */
-          -6px 10px 20px rgba(0,0,0,0.6); /* Drop shadow on wall for 3D perception */
+        padding: 0; 
         box-sizing: border-box;
-        padding: 6%; /* Equal mount on all 4 sides */
+        
+        /* Minimalist, elegant solid oak/walnut color. No cheap textures. */
+        border: 6px solid #8b7355; 
+        border-radius: 1px;
+
+        /* Clean, photographic drop shadow */
+        box-shadow: -8px 16px 32px rgba(0,0,0,0.4);
+          
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 2px;
+      }
+      
+      /* Subtle, sophisticated interior depth */
+      .card-inner::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        box-shadow: 
+          /* Soft, delicate directional shadow */
+          inset 3px 5px 8px rgba(0, 0, 0, 0.25),
+          /* Very subtle ambient occlusion where canvas meets wood */
+          inset 0px 0px 2px rgba(0, 0, 0, 0.3);
       }
 
       .card-inner img {
         width: 100%;
         height: 100%;
         display: block;
-        object-fit: cover; /* Fill the mat perfectly */
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25); /* Shadow of the canvas on the mount */
+        object-fit: cover; 
       }
 
       .card-fog {
@@ -165,61 +180,133 @@
         opacity: 0;
       }
 
+      /* A photorealistic luxury collector's home mockup */
       #lightbox {
         position: fixed;
         inset: 0;
-        z-index: 40;
+        z-index: 99999;
         display: none;
-        background: rgba(0, 0, 0, 0.84);
-        backdrop-filter: blur(6px);
+        background: url('/images/painter/zero-plus/room-bg-character.jpg') no-repeat center bottom / cover;
         align-items: center;
         justify-content: center;
-        padding: 40px;
       }
       #lightbox.open { display: flex; }
 
+      .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.5);
+        color: #2a2520;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 10;
+      }
+      .lightbox-nav:hover {
+        background: rgba(255, 255, 255, 0.8);
+      }
+      #lightbox-prev { left: 40px; }
+      #lightbox-next { right: 40px; }
+
       .lightbox-panel {
-        width: min(1100px, 96vw);
-        display: grid;
-        grid-template-columns: minmax(280px, 56%) minmax(260px, 44%);
-        gap: 28px;
-        align-items: start;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* The mockup frame perfectly hugging the image */
+      .lightbox-frame {
+        position: relative;
+        display: inline-flex;
+        border: 10px solid #8b7355; 
+        border-radius: 1px;
+        box-shadow: -15px 30px 60px rgba(0,0,0,0.5), -5px 10px 20px rgba(0,0,0,0.3); 
+        /* Push the painting significantly higher up the wall so it doesn't touch the baseboard */
+        transform: translateY(-16vh);
+      }
+      
+      .lightbox-frame::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        box-shadow: 
+          inset 4px 8px 16px rgba(0, 0, 0, 0.25),
+          inset 1px 1px 3px rgba(0, 0, 0, 0.3);
       }
 
       #lightbox-img {
-        width: 100%;
-        max-height: 88vh;
-        object-fit: contain;
-        border-radius: 14px;
+        max-height: 55vh; /* Fits perfectly above the chair */
+        max-width: 100%;
+        height: auto;
+        display: block;
       }
 
+      /* Sophisticated floating typography panel */
       .lightbox-copy {
-        color: rgba(245, 245, 245, 0.86);
+        position: absolute;
+        bottom: 50px;
+        right: 50px;
+        width: 380px;
+        color: #2a2520;
         text-transform: none;
         letter-spacing: normal;
+        background: rgba(250, 246, 240, 0.85);
+        border: 1px solid rgba(255,255,255,0.6);
+        padding: 35px;
+        border-radius: 12px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        z-index: 5;
       }
       #lightbox-title {
         margin: 0 0 10px 0;
         font-size: 32px;
-        font-weight: 500;
+        font-weight: 400;
+        font-family: ui-serif, Georgia, serif;
+        color: #1a1612;
       }
       #lightbox-meta {
-        margin: 0 0 14px 0;
-        color: rgba(245, 245, 245, 0.62);
+        margin: 0 0 20px 0;
+        color: #8a7a68;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
       }
       #lightbox-caption {
         margin: 0;
-        color: rgba(245, 245, 245, 0.72);
-        line-height: 1.5;
+        color: #4a4238;
+        line-height: 1.6;
+        font-size: 15px;
       }
       #lightbox-close {
-        margin-top: 24px;
-        border: 1px solid rgba(245, 245, 245, 0.34);
+        margin-top: 35px;
+        border: 1px solid rgba(42, 37, 32, 0.2);
         background: transparent;
-        color: rgba(245, 245, 245, 0.88);
-        padding: 10px 14px;
-        border-radius: 8px;
+        color: #2a2520;
+        padding: 10px 24px;
+        border-radius: 4px;
         cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 12px;
+      }
+      #lightbox-close:hover {
+        background: rgba(42, 37, 32, 0.05);
+        border-color: rgba(42, 37, 32, 0.4);
       }
 
       @media (max-width: 900px) {
@@ -234,8 +321,41 @@
         .lightbox-panel { grid-template-columns: 1fr; }
       }
     </style>
-  </head>
+  
+    <style>
+      .global-home-btn {
+        position: fixed;
+        top: 36px;
+        left: 36px;
+        width: 32px;
+        height: 32px;
+        color: rgba(245, 245, 245, 0.6);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 180ms ease, opacity 180ms ease, transform 180ms ease;
+      }
+      .global-home-btn:hover {
+        color: white;
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      .global-home-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+    </style>
+</head>
   <body>
+
+    <a href="/" class="global-home-btn" aria-label="Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+    </a>
+
     <div id="blob-a"></div>
     <div id="blob-b"></div>
 
@@ -265,8 +385,12 @@
     </div>
 
     <div id="lightbox" aria-hidden="true">
+      <button id="lightbox-prev" class="lightbox-nav" aria-label="Previous artwork">&larr;</button>
+      <button id="lightbox-next" class="lightbox-nav" aria-label="Next artwork">&rarr;</button>
       <div class="lightbox-panel">
-        <img id="lightbox-img" src="" alt="" />
+        <div class="lightbox-frame">
+          <img id="lightbox-img" src="" alt="" />
+        </div>
         <div class="lightbox-copy">
           <h2 id="lightbox-title"></h2>
           <p id="lightbox-meta"></p>

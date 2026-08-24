@@ -1,6 +1,6 @@
 import type { TextWorkModule } from '../types.js';
 
-const TITLE = 'ISSUED IN PUBLIC INTEREST';
+const TITLE = 'ISSUED INTHE PUBLIC INTREST';
 
 const BODY = `“Love of the truth puts you on the spot."
 Only to the extent that we expose ourselves over and over to annihilation can
@@ -137,7 +137,7 @@ const appendBodyChars = (parent: HTMLElement, text: string): ScrambleChar[] => {
 };
 
 const work: TextWorkModule = {
-  title: 'Issued in Public Interest',
+  title: 'Issued Inthe Public Intrest',
 
   mount(container: HTMLElement): () => void {
     container.innerHTML = '';
@@ -179,6 +179,11 @@ const work: TextWorkModule = {
     contentColumn.className = 'ipi-content';
     contentColumn.append(titleBlock, bodyZone);
     sticky.append(contentColumn);
+
+    const instructionEl = document.createElement('div');
+    instructionEl.className = 'ipi-instruction';
+    instructionEl.textContent = 'SCROLL TO REVEAL';
+    sticky.appendChild(instructionEl);
 
     const spacer = document.createElement('div');
     spacer.className = 'ipi-spacer';
@@ -304,6 +309,19 @@ const work: TextWorkModule = {
       .ipi-char {
         display: inline;
         will-change: transform;
+      }
+      .ipi-instruction {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Neue Haas Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.4);
+        pointer-events: none;
+        transition: opacity 0.3s ease;
       }
     `;
     document.head.appendChild(style);

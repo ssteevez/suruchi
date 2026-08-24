@@ -23,7 +23,7 @@ export const WORKS: WorkEntry[] = [
   },
   {
     slug: 'issued-in-public-interest',
-    title: 'Issued in Public Interest',
+    title: 'Issued Inthe Public Intrest',
     load: () => import('./works/issued-in-public-interest.js'),
   },
   {

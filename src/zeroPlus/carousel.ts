@@ -74,7 +74,9 @@ export function initCarousel(): Carousel {
   const lbMeta = document.getElementById('lightbox-meta') as HTMLElement | null;
   const lbCaption = document.getElementById('lightbox-caption') as HTMLElement | null;
   const lbClose = document.getElementById('lightbox-close') as HTMLButtonElement | null;
-  if (!ring || !lightbox || !lbImg || !lbTitle || !lbMeta || !lbCaption || !lbClose) {
+  const lbPrev = document.getElementById('lightbox-prev') as HTMLButtonElement | null;
+  const lbNext = document.getElementById('lightbox-next') as HTMLButtonElement | null;
+  if (!ring || !lightbox || !lbImg || !lbTitle || !lbMeta || !lbCaption || !lbClose || !lbPrev || !lbNext) {
     throw new Error('Carousel: required DOM elements not found');
   }
 
@@ -405,24 +407,53 @@ export function initCarousel(): Carousel {
     inners.push(inner);
     card.addEventListener('click', () => {
       if (!state.isOpen) {
-        lbImg.src = img.src;
-        lbImg.alt = img.alt;
-        lbTitle.textContent = `Untitled Painting ${i + 1}`;
-        lbMeta.textContent = 'Oil / Acrylic placeholder · Year placeholder · Size placeholder';
-        lbCaption.textContent =
-          'Placeholder curatorial text. This section will include title context, process notes, and interpretive description for this painting.';
-        lightbox.classList.add('open');
-        state.isOpen = true;
-        paused = true;
+        openLightbox(i);
       }
     });
   }
+
+  let currentLightboxIndex = -1;
+
+  const openLightbox = (index: number): void => {
+    currentLightboxIndex = index;
+    const img = images[index];
+    lbImg.src = img.src;
+    lbImg.alt = img.alt;
+    lbTitle.textContent = `Untitled Painting ${index + 1}`;
+    lbMeta.textContent = 'Oil / Acrylic placeholder · Year placeholder · Size placeholder';
+    lbCaption.textContent =
+      'Placeholder curatorial text. This section will include title context, process notes, and interpretive description for this painting.';
+    
+    if (!state.isOpen) {
+      lightbox.classList.add('open');
+      state.isOpen = true;
+      paused = true;
+    }
+  };
 
   const closeLightbox = (): void => {
     lightbox.classList.remove('open');
     state.isOpen = false;
     paused = false;
+    currentLightboxIndex = -1;
   };
+
+  const navLightbox = (direction: 1 | -1): void => {
+    if (!state.isOpen || currentLightboxIndex === -1) return;
+    let nextIndex = (currentLightboxIndex + direction) % IMAGE_COUNT;
+    if (nextIndex < 0) nextIndex += IMAGE_COUNT;
+    openLightbox(nextIndex);
+  };
+
+  lbPrev.addEventListener('click', (e) => {
+    e.stopPropagation();
+    navLightbox(-1);
+  });
+  
+  lbNext.addEventListener('click', (e) => {
+    e.stopPropagation();
+    navLightbox(1);
+  });
 
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) {
@@ -432,8 +463,13 @@ export function initCarousel(): Carousel {
   lbClose.addEventListener('click', closeLightbox);
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && state.isOpen) {
+    if (!state.isOpen) return;
+    if (e.key === 'Escape') {
       closeLightbox();
+    } else if (e.key === 'ArrowLeft') {
+      navLightbox(-1);
+    } else if (e.key === 'ArrowRight') {
+      navLightbox(1);
     }
   });
 

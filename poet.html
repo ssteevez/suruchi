@@ -164,8 +164,41 @@
         text-decoration: none;
       }
     </style>
-  </head>
+  
+    <style>
+      .global-home-btn {
+        position: fixed;
+        top: 36px;
+        left: 36px;
+        width: 32px;
+        height: 32px;
+        color: rgba(245, 245, 245, 0.6);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 180ms ease, opacity 180ms ease, transform 180ms ease;
+      }
+      .global-home-btn:hover {
+        color: white;
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      .global-home-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+    </style>
+</head>
   <body>
+
+    <a href="/" class="global-home-btn" aria-label="Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+    </a>
+
     <div class="header-title">POET</div>
     <main>
       <div class="thumbnails-container">
@@ -192,6 +225,6 @@
         </a>
       </div>
     </main>
-    <a href="/" class="back-btn">HOME</a>
+    
   </body>
 </html>

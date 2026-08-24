@@ -68,97 +68,65 @@ const work: TextWorkModule = {
     const stampsContainer = document.createElement('div');
     stampsContainer.style.position = 'absolute';
     stampsContainer.style.inset = '0';
-    stampsContainer.style.pointerEvents = 'none'; // let clicks pass through to container
+    stampsContainer.style.pointerEvents = 'none';
     container.appendChild(stampsContainer);
 
-    // ── Ghost Cursor ──────────────────────────────────────────────────────
-    const ghost = document.createElement('div');
-    ghost.textContent = TEXT;
-    ghost.style.position = 'fixed';
-    ghost.style.left = '-1000px';
-    ghost.style.top = '-1000px';
-    ghost.style.transform = 'translate(-50%, -50%)';
-    ghost.style.fontFamily = '"Stardos Stencil", cursive';
-    ghost.style.fontSize = '3vw'; // Smaller than before
-    ghost.style.fontWeight = '700';
-    ghost.style.whiteSpace = 'nowrap';
-    ghost.style.color = 'rgba(245, 245, 245, 0.3)';
-    ghost.style.pointerEvents = 'none';
-    ghost.style.zIndex = '9999';
-    ghost.style.opacity = '0';
-    ghost.style.transition = 'opacity 0.15s ease';
-    
-    // Default starting rotation and scale to look natural
-    let currentGhostRotation = (Math.random() - 0.5) * 90; // -45 to +45 degrees
-    let currentGhostScale = 0.5 + Math.random() * 1.5; // 0.5x to 2.0x scale
-    
-    container.appendChild(ghost);
+    let active = true;
+    let spawnTimeout: number | null = null;
 
-    // ── Events ────────────────────────────────────────────────────────────
-    let ghostVisible = false;
-
-    const onMouseMove = (e: MouseEvent) => {
-      ghost.style.left = `${e.clientX}px`;
-      ghost.style.top = `${e.clientY}px`;
-      ghost.style.transform = `translate(-50%, -50%) rotate(${currentGhostRotation}deg) scale(${currentGhostScale})`;
-    };
-
-    const onMouseEnter = () => {
-      ghostVisible = true;
-      ghost.style.opacity = '1';
-    };
-
-    const onMouseLeave = () => {
-      ghostVisible = false;
-      ghost.style.opacity = '0';
-    };
-
-    const onClick = (e: MouseEvent) => {
-      // Create stamp
+    const spawn = () => {
+      if (!active) return;
       const stamp = document.createElement('div');
       stamp.textContent = TEXT;
       
-      const opacity = 0.75 + Math.random() * 0.2;
+      // Keep rotation subtle so it doesn't clip top/bottom on narrow screens
+      const rot = (Math.random() - 0.5) * 30; 
+      // Constrain scale and center placement so it doesn't bleed off edges
+      const scale = 0.6 + Math.random() * 0.7; 
+      const x = window.innerWidth * (0.3 + Math.random() * 0.4); 
+      const y = window.innerHeight * (0.3 + Math.random() * 0.4); 
+      const maxOpacity = 0.75 + Math.random() * 0.2;
       
       stamp.style.position = 'absolute';
-      stamp.style.left = `${e.clientX}px`;
-      stamp.style.top = `${e.clientY}px`;
-      stamp.style.transform = `translate(-50%, -50%) rotate(${currentGhostRotation}deg) scale(${currentGhostScale})`;
+      stamp.style.left = `${x}px`;
+      stamp.style.top = `${y}px`;
+      stamp.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(${scale})`;
       stamp.style.fontFamily = '"Stardos Stencil", cursive';
-      stamp.style.fontSize = '3vw'; // Base size, adjusted by scale
+      stamp.style.fontSize = 'clamp(14px, 3.5vw, 48px)';
       stamp.style.fontWeight = '700';
-      stamp.style.whiteSpace = 'nowrap';
+      stamp.style.textAlign = 'center';
+      stamp.style.maxWidth = '90vw';
+      stamp.style.whiteSpace = 'normal'; // Allow wrapping on very narrow mobile screens
       stamp.style.color = INK;
-      stamp.style.opacity = String(opacity);
+      stamp.style.opacity = '0';
       stamp.style.pointerEvents = 'none';
       stamp.style.filter = 'url(#graffiti-simple)';
       stamp.style.textShadow = '1px 1px 2px rgba(255,255,255,0.1)';
       stamp.style.mixBlendMode = 'screen';
+      stamp.style.transition = 'opacity 1s ease-in-out';
       
       stampsContainer.appendChild(stamp);
       
-      // Immediately pick a NEW random angle and scale for the next click (the ghost cursor)
-      currentGhostRotation = (Math.random() - 0.5) * 90; // Aggressive angles
-      currentGhostScale = 0.5 + Math.random() * 1.5; // Randomized sizes
-      ghost.style.transform = `translate(-50%, -50%) rotate(${currentGhostRotation}deg) scale(${currentGhostScale})`;
+      requestAnimationFrame(() => {
+        if (!active) return;
+        stamp.style.opacity = String(maxOpacity);
+      });
+      
+      setTimeout(() => {
+        if (!active) return;
+        stamp.style.transition = 'opacity 2s ease-in-out';
+        stamp.style.opacity = '0';
+        
+        spawnTimeout = window.setTimeout(spawn, 0);
+        
+        setTimeout(() => {
+          if (stamp.parentNode) stamp.remove();
+        }, 2000);
+      }, 3000);
     };
 
-    container.addEventListener('mousemove', onMouseMove);
-    container.addEventListener('mouseenter', onMouseEnter);
-    container.addEventListener('mouseleave', onMouseLeave);
-    container.addEventListener('click', onClick);
-
-    // ── Thumbnail Mode ────────────────────────────────────────────────────
-    // If loaded as a thumbnail iframe, auto-populate some stamps so it's not blank
-    if (document.body.classList.contains('is-thumbnail')) {
-      ghost.style.display = 'none'; // hide ghost in thumb
-      for (let i = 0; i < 5; i++) {
-        onClick({
-          clientX: window.innerWidth * (0.2 + Math.random() * 0.6),
-          clientY: window.innerHeight * (0.2 + Math.random() * 0.6),
-        } as unknown as MouseEvent);
-      }
-    }
+    // Kick it off
+    spawn();
 
     // ── Font Loading ──────────────────────────────────────────────────────
     const link = document.createElement('link');
@@ -168,10 +136,8 @@ const work: TextWorkModule = {
 
     // ── Cleanup ───────────────────────────────────────────────────────────
     return (): void => {
-      container.removeEventListener('mousemove', onMouseMove);
-      container.removeEventListener('mouseenter', onMouseEnter);
-      container.removeEventListener('mouseleave', onMouseLeave);
-      container.removeEventListener('click', onClick);
+      active = false;
+      if (spawnTimeout) clearTimeout(spawnTimeout);
       document.body.style.background = '';
       container.innerHTML = '';
       link.remove();

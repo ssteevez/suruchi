@@ -84,17 +84,23 @@ function App() {
         Scroll or use arrow keys to navigate
       </div>
 
-      <img 
-        src={PHOTOGRAM_IMAGES[activeIndex]} 
-        alt="Photogram" 
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-          opacity: opacity,
-          transition: 'opacity 800ms ease-in-out',
-        }}
-      />
+      {PHOTOGRAM_IMAGES.map((src, i) => (
+        <img 
+          key={src}
+          src={src} 
+          alt={`Photogram ${i}`} 
+          style={{
+            position: 'absolute',
+            top: 0, left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            opacity: activeIndex === i ? opacity : 0,
+            transition: 'opacity 800ms ease-in-out',
+            pointerEvents: activeIndex === i ? 'auto' : 'none',
+          }}
+        />
+      ))}
       
       {/* Noise overlay */}
       <div style={{

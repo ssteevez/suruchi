@@ -101,6 +101,12 @@ const work: TextWorkModule = {
 
     phraseBox.appendChild(canvas);
     stage.appendChild(phraseBox);
+    
+    const instructionEl = document.createElement('div');
+    instructionEl.className = 'bd-instruction';
+    instructionEl.textContent = 'HOVER TO REVEAL';
+    stage.appendChild(instructionEl);
+    
     container.appendChild(stage);
 
     const style = document.createElement('style');
@@ -142,6 +148,19 @@ const work: TextWorkModule = {
         display: block;
         vertical-align: top;
         touch-action: none;
+      }
+      .bd-instruction {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Neue Haas Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.4);
+        pointer-events: none;
+        transition: opacity 0.5s ease;
       }
       .bd-tune {
         position: fixed;
@@ -512,8 +531,11 @@ const work: TextWorkModule = {
       const m = compositionMetrics(fontPx);
       topGlyphs = m.topGlyphs;
       reflectGlyphs = m.reflectGlyphs;
+      // The actual ink ends above the baseline because Georgia has space for descenders.
+      // We raise both the waterline (reflectBandTop) and the pivot to match this ink line.
+      const descenderGap = fontPx * 0.24; 
       pivotX = m.pivotXLocal * dpr;
-      pivotY = m.baselineY * dpr;
+      pivotY = (m.baselineY - descenderGap) * dpr;
       reflectBandTop = Math.floor(pivotY);
       baselineCss = m.baselineY;
 

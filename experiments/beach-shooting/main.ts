@@ -7,8 +7,8 @@ import { playPopSound } from './audio';
 
 const container = document.getElementById('game-container') as HTMLDivElement;
 
-let width  = window.innerWidth;
-let height = window.innerHeight;
+let width  = container.clientWidth;
+let height = container.clientHeight;
 
 // ── Zoom state ────────────────────────────────────────────────────────────────
 const ZOOM_OUT = 0.95;
@@ -18,9 +18,7 @@ let currentZoom = ZOOM_OUT;
 let zoomTargetWorldX = 0;
 let zoomTargetWorldY = 0;
 
-const requiredVisibleHeightInit = Math.max(window.innerHeight, 844 + 320);
-const visibleWidthInit = requiredVisibleHeightInit * (window.innerWidth / window.innerHeight);
-let camOffsetX = -visibleWidthInit * 0.10;
+let camOffsetX = 0;
 let camOffsetY = 0;
 
 // ── Board fractions (kept for reference; 3D uses world origin) ────────────────
@@ -48,33 +46,34 @@ initRenderer(container, width, height);
 // ── Input ─────────────────────────────────────────────────────────────────────
 
 window.addEventListener('resize', () => {
-  width  = window.innerWidth;
-  height = window.innerHeight;
+  width  = container.clientWidth;
+  height = container.clientHeight;
   onResize(width, height);
 });
 
-window.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
+container.addEventListener('mousemove', (e) => {
+  const rect = container.getBoundingClientRect();
+  mouseX = e.clientX - rect.left;
+  mouseY = e.clientY - rect.top;
 });
 
-window.addEventListener('touchmove', (e) => {
-  const t = e.touches[0];
-  if (t) { mouseX = t.clientX; mouseY = t.clientY; }
+container.addEventListener('touchmove', (e) => {
+  const rect = container.getBoundingClientRect();
+  mouseX = e.touches[0].clientX - rect.left;
+  mouseY = e.touches[0].clientY - rect.top;
 }, { passive: true });
 
-window.addEventListener('click', fire);
+container.addEventListener('click', fire);
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Space') { e.preventDefault(); fire(); }
 });
 
-window.addEventListener('contextmenu', (e) => {
+container.addEventListener('contextmenu', (e) => {
   e.preventDefault();
   zoomed = !zoomed;
   if (zoomed) {
-    // Capture the world point under cursor from the current camera transform.
     zoomTargetWorldX = Math.max(-420, Math.min(420, camOffsetX + (mouseX - width  / 2) / currentZoom));
-    zoomTargetWorldY = Math.max(-340, Math.min(340, camOffsetY - (mouseY - height / 2) / currentZoom));
+    zoomTargetWorldY = Math.max(-620, Math.min(50,  camOffsetY - (mouseY - height / 2) / currentZoom));
   }
 });
 
@@ -82,7 +81,78 @@ window.addEventListener('contextmenu', (e) => {
 
 const SHOT_GUST_CHANCE = 0.62;
 
+let shotsFired = 0;
+const balloonsCountEl = document.getElementById('balloons-count');
+const shotsCountEl = document.getElementById('shots-count');
+const resultSentenceEl = document.getElementById('result-sentence');
+const shotWordsListEl = document.getElementById('shot-words-list');
+const cbIam = document.getElementById('cb-iam') as HTMLInputElement;
+const cbHappy = document.getElementById('cb-happy') as HTMLInputElement;
+const cbNot = document.getElementById('cb-not') as HTMLInputElement;
+const cbUnhappy = document.getElementById('cb-unhappy') as HTMLInputElement;
+
+function updateSentence() {
+  const parts = [];
+  if (cbIam && cbIam.checked) parts.push('I AM');
+  if (cbNot && cbNot.checked) parts.push('NOT');
+  if (cbHappy && cbHappy.checked) parts.push('HAPPY');
+  if (cbUnhappy && cbUnhappy.checked) parts.push('UNHAPPY');
+  
+  if (resultSentenceEl) {
+    resultSentenceEl.textContent = parts.join(' ');
+  }
+}
+
+if (cbIam) cbIam.addEventListener('change', updateSentence);
+if (cbHappy) cbHappy.addEventListener('change', updateSentence);
+if (cbNot) cbNot.addEventListener('change', updateSentence);
+if (cbUnhappy) cbUnhappy.addEventListener('change', updateSentence);
+
+function updateStats() {
+  const aliveBalloons = balloons.filter(b => b.alive);
+  
+  if (balloonsCountEl) {
+    balloonsCountEl.textContent = aliveBalloons.length.toString().padStart(2, '0');
+  }
+  if (shotsCountEl) {
+    shotsCountEl.textContent = shotsFired.toString().padStart(2, '0');
+  }
+
+  // Update checkboxes based on what survives on the wall
+  const survivingWords = new Set(aliveBalloons.map(b => b.word));
+  
+  const hasIam = survivingWords.has('I') || survivingWords.has('AM');
+  const hasHappy = survivingWords.has('HAPPY');
+  const hasNot = survivingWords.has('NOT');
+  const hasUnhappy = survivingWords.has('UNHAPPY');
+
+  if (cbIam) {
+    if (!hasIam) cbIam.checked = false;
+    cbIam.disabled = !hasIam;
+  }
+  if (cbHappy) {
+    if (!hasHappy) cbHappy.checked = false;
+    cbHappy.disabled = !hasHappy;
+  }
+  if (cbNot) {
+    if (!hasNot) cbNot.checked = false;
+    cbNot.disabled = !hasNot;
+  }
+  if (cbUnhappy) {
+    if (!hasUnhappy) cbUnhappy.checked = false;
+    cbUnhappy.disabled = !hasUnhappy;
+  }
+  
+  if (shotWordsListEl) {
+    shotWordsListEl.textContent = shotWords.join(' — ');
+  }
+
+  updateSentence();
+}
+
 function fire(): void {
+  shotsFired++;
+  
   let fx = aimX;
   let fy = aimY;
 
@@ -97,20 +167,15 @@ function fire(): void {
   if (hit) {
     hit.alive = false;
     score++;
-    if (shotWords.length >= 7) shotWords = [];
     shotWords.push(hit.word);
-
-    if (shotWords.length === 7) {
-      setTimeout(() => {
-        if (shotWords.length === 7) shotWords = [];
-      }, 2000);
-    }
-
+    
     // Project balloon's 3D world position to HUD screen coords for particles
     const sp = projectBalloonToScreen(hit, width, height);
     particles.push(...spawnBurst(sp.x, sp.y, hit.colorTop, hit.colorBottom));
     playPopSound();
   }
+  
+  updateStats();
 }
 
 // ── Loop ──────────────────────────────────────────────────────────────────────
@@ -119,17 +184,12 @@ function loop(now: number): void {
   const dt = Math.min(now - lastTime, 100);
   lastTime = now;
 
-  // Zoom lerp + camera pan toward aim point
+  // Zoom lerp
   const zoomTarget = zoomed ? ZOOM_IN : ZOOM_OUT;
   currentZoom += (zoomTarget - currentZoom) * 0.12;
-  const requiredVisibleHeight = Math.max(height, 844 + 320);
-  const visibleWidth = requiredVisibleHeight * (width / height);
-  const defaultCamOffsetX = -visibleWidth * 0.10;
 
-  const desiredCamOffsetX = zoomed ? zoomTargetWorldX : defaultCamOffsetX;
-  const desiredCamOffsetY = zoomed ? zoomTargetWorldY : 0;
-  camOffsetX += (desiredCamOffsetX - camOffsetX) * 0.12;
-  camOffsetY += (desiredCamOffsetY - camOffsetY) * 0.12;
+  camOffsetX = 0;
+  camOffsetY = 0;
 
   const bx = width  * BOARD_CX_FRAC;
   const by = height * BOARD_CY_FRAC;
@@ -167,3 +227,4 @@ function loop(now: number): void {
 }
 
 requestAnimationFrame(loop);
+updateStats();

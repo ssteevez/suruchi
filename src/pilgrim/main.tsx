@@ -178,6 +178,7 @@ const SERIES_CACHE: Record<string, { baseItems: ImageMeta[] }> = {};
 for (const [seriesId, names] of Object.entries(PILGRIM_SERIES_IMAGE_NAMES)) {
   SERIES_CACHE[seriesId] = computeSeriesItems(names);
 }
+const ALL_IMAGE_ITEMS = Object.values(SERIES_CACHE).flatMap(c => c.baseItems);
 
 const InfinitePilgrim: React.FC<{
   seriesId?: string;
@@ -671,38 +672,46 @@ const ImagePlane: React.FC<{
     let hazeAmount = clamp(distanceHaze * 0.72 + layerFog * 0.8 + overflowFog, 0, 1);
     const material = mesh.material as THREE.MeshBasicMaterial;
     
+    // --- focus / glow ---
+    const focusRadius = 7 + camera.position.z * 0.14;
+    const rawFocus = Math.max(0, 1 - planarDistance / focusRadius);
+    const targetFocus = fade > 0.2 ? rawFocus : 0;
+    focusAmountRef.current += (targetFocus - focusAmountRef.current) * (1 - Math.pow(0.91, dt * 60));
+
     if (isSeries) {
       fade = 1;
       hazeAmount = 0;
       material.opacity = 1;
       material.depthWrite = true;
     } else {
-      const targetOpacity = fade * (1 - hazeAmount * 0.42);
+      // Base opacity heavily reduced by haze
+      let targetOpacity = fade * (1 - hazeAmount * 0.65);
+      
+      // Boost opacity aggressively if in focus
+      targetOpacity = Math.min(1, targetOpacity + focusAmountRef.current * 0.7);
+      
       material.opacity += (targetOpacity - material.opacity) * (1 - Math.pow(0.86, dt * 60));
       material.depthWrite = material.opacity > 0.92 && hazeAmount < 0.18;
     }
     
-    material.color.copy(nearColorRef.current).lerp(hazeColorRef.current, hazeAmount * 0.85);
-
-    // --- focus / glow ---
-    const focusRadius = 7 + camera.position.z * 0.14;
-    const rawFocus = Math.max(0, 1 - planarDistance / focusRadius);
-    const targetFocus = material.opacity > 0.22 ? rawFocus : 0;
-    focusAmountRef.current += (targetFocus - focusAmountRef.current) * (1 - Math.pow(0.91, dt * 60));
+    // Lerp towards bright white if in focus to simulate a sharp spotlight, otherwise normal haze
+    const baseColor = nearColorRef.current.clone().lerp(hazeColorRef.current, hazeAmount * 0.85);
+    material.color.copy(baseColor).lerp(new THREE.Color(0xffffff), focusAmountRef.current * 0.4);
 
     const glowMesh = glowRef.current;
     if (glowMesh) {
       const t = performance.now() * 0.001;
       const phase = plane.position[0] * 0.31 + plane.position[1] * 0.19;
       const breathe = Math.sin(t * 0.52 + phase) * 0.5 + 0.5;
-      const glowOpacity = focusAmountRef.current * (0.13 + breathe * 0.09);
+      // Much stronger glow for focused images
+      const glowOpacity = focusAmountRef.current * (0.35 + breathe * 0.15);
       const glowMat = glowMesh.material as THREE.MeshBasicMaterial;
       glowMat.opacity = glowOpacity;
       glowMesh.visible = glowOpacity > 0.006;
     }
 
     mesh.visible = material.opacity > 0.025;
-    mesh.rotation.z = isSeries ? 0 : plane.rotation + Math.sin((performance.now() + plane.position[0] * 100) * 0.00026) * 0.006;
+    mesh.rotation.z = plane.rotation;
     
     if (textRef.current && textRef.current.material) {
       (textRef.current.material as THREE.Material).opacity = material.opacity;
@@ -755,113 +764,56 @@ const ImagePlane: React.FC<{
 };
 
 const createChunk = (cx: number, cy: number, constellation: number, seriesId: string | null): ChunkData => {
-  if (seriesId === null) {
-    if (cx !== 0 || cy !== 0) {
-      return { key: `${cx}:${cy}`, cx, cy, planes: [], constellation, lastSeenFrame: 0 };
-    }
-    const planes: PlaneDescriptor[] = [];
-    const totalItems = SERIES_IMAGE_ITEMS.length;
-    const seed = hash(`menu:${constellation}`);
-    const rng = mulberry32(seed);
-    
-    // Tighter bounds to keep everything on screen at once
-    const minX = -65;
-    const maxX = 65;
-    const minY = -35;
-    const maxY = 45;
-    const points: Array<{ x: number; y: number; w: number }> = [];
-    
-    for (let i = 0; i < totalItems; i++) {
-      let accepted = false;
-      let w = 10 + rng() * 4; // Larger size between 10 and 14
-      
-      for (let attempt = 0; attempt < 300; attempt++) {
-        const x = minX + rng() * (maxX - minX);
-        const y = minY + rng() * (maxY - minY);
-        
-        const overlaps = points.some(p => {
-          const dx = p.x - x;
-          const dy = p.y - y;
-          const dist = Math.hypot(dx, dy);
-          // Tighter spacing check
-          const reqDist = (p.w * 1.6) / 2 + (w * 1.6) / 2 + 3 + rng() * 5; 
-          return dist < reqDist;
-        });
-        
-        if (!overlaps) {
-          points.push({ x, y, w });
-          accepted = true;
-          break;
-        }
-      }
-      
-      if (!accepted) {
-        points.push({ x: minX + rng() * (maxX - minX), y: minY + rng() * (maxY - minY), w });
-      }
-    }
-    
-    for (let i = 0; i < totalItems; i++) {
-      const p = points[i]!;
-      const z = INITIAL_Z - 80;
-      
-      planes.push({
-        key: `menu:${i}`,
-        position: [p.x, p.y, z],
-        width: p.w,
-        image: SERIES_IMAGE_ITEMS[i]!,
-        rotation: 0,
-        layer: getLayerFromDepth(z),
-      });
-    }
-    return { key: `${cx}:${cy}`, cx, cy, planes, constellation, lastSeenFrame: 0 };
-  }
-
   const seed = hash(`${constellation}:${cx}:${cy}`);
   const rng = mulberry32(seed);
   const planes: PlaneDescriptor[] = [];
   
-  if (cx !== 0 || cy !== 0) {
-    return { key: `${cx}:${cy}`, cx, cy, planes: [], constellation, lastSeenFrame: 0 };
-  }
-
-  const cache = SERIES_CACHE[seriesId] || { baseItems: [] };
-  const baseItems = cache.baseItems;
+  // Heavily reduce distribution: 80% chance of 1 image, 20% chance of 2 images
+  const numItems = rng() < 0.8 ? 1 : 2;
   
-  if (baseItems.length === 1) {
-    const z = INITIAL_Z - 50; 
-    planes.push({
-      key: `img:0`,
-      position: [0, 0, z],
-      width: 42, // Half the previous size
-      image: baseItems[0]!,
-      rotation: 0,
-      layer: getLayerFromDepth(z)
-    });
-    return { key: `${cx}:${cy}`, cx, cy, planes, constellation, lastSeenFrame: 0 };
-  }
+  const minX = cx * CHUNK_SIZE - CHUNK_SIZE / 2;
+  const maxX = cx * CHUNK_SIZE + CHUNK_SIZE / 2;
+  const minY = cy * CHUNK_SIZE - CHUNK_SIZE / 2;
+  const maxY = cy * CHUNK_SIZE + CHUNK_SIZE / 2;
   
-  // Scatter multiple items with strict no-overlap on a single Z plane
-  const minX = -85;
-  const maxX = 85;
-  const minY = -65;
-  const maxY = 65;
   const points: Array<{ x: number; y: number; w: number }> = [];
-  const z = INITIAL_Z - 80;
   
-  for (let i = 0; i < baseItems.length; i++) {
-    let accepted = false;
-    let w = 12 + rng() * 10; // Sizes between 12 and 22
+  for (let i = 0; i < numItems; i++) {
+    // Map chunk coordinates to a global index to prevent nearby repetition
+    // We use prime multipliers 17 and 31 to distribute adjacent chunks far apart in the array
+    const baseIndex = Math.abs(cx * 17 + cy * 31);
+    const imageIndex = (baseIndex + i * 47) % ALL_IMAGE_ITEMS.length;
+    const image = ALL_IMAGE_ITEMS[imageIndex]!;
     
-    for (let attempt = 0; attempt < 800; attempt++) {
-      const x = minX + rng() * (maxX - minX);
-      const y = minY + rng() * (maxY - minY);
+    let accepted = false;
+    let w = 10 + rng() * 6; // Smaller sizes to increase perceived gaps (10 to 16)
+    
+    // Confine images strictly within chunk bounds to prevent inter-chunk overlap
+    // Increased padding to force more gap at the borders
+    const padding = 2 + rng() * 4;
+    let safeMinX = minX + (w / 2) + padding;
+    let safeMaxX = maxX - (w / 2) - padding;
+    let safeMinY = minY + (w / 2) + padding;
+    let safeMaxY = maxY - (w / 2) - padding;
+    
+    if (safeMaxX < safeMinX) safeMaxX = safeMinX;
+    if (safeMaxY < safeMinY) safeMaxY = safeMinY;
+    
+    for (let attempt = 0; attempt < 50; attempt++) {
+      const x = safeMinX + rng() * (safeMaxX - safeMinX);
+      const y = safeMinY + rng() * (safeMaxY - safeMinY);
       
       const overlaps = points.some(p => {
         const dx = p.x - x;
         const dy = p.y - y;
         const dist = Math.hypot(dx, dy);
-        // Required distance uses their visual scaled sizes plus minimal padding
-        const reqDist = (p.w * 1.75) / 2 + (w * 1.75) / 2 + 2 + rng() * 4; 
+        
+        // Only 10% chance to allow intentional randomized overlap
+        const allowOverlap = rng() < 0.10;
+        const reqDist = allowOverlap 
+          ? ((p.w + w) * 0.45) // overlap allowed, but max ~55% overlap
+          : ((p.w + w) / 2 + 3 + rng() * 3); // large standard gap
+          
         return dist < reqDist;
       });
       
@@ -873,22 +825,22 @@ const createChunk = (cx: number, cy: number, constellation: number, seriesId: st
     }
     
     if (!accepted) {
-      points.push({ x: minX + rng() * (maxX - minX), y: minY + rng() * (maxY - minY), w });
+      points.push({ x: safeMinX + rng() * (safeMaxX - safeMinX), y: safeMinY + rng() * (safeMaxY - safeMinY), w });
     }
-  }
-
-  for (let i = 0; i < baseItems.length; i++) {
-    const p = points[i]!;
+    
+    const p = points[points.length - 1]!;
+    const z = INITIAL_Z - 70 - rng() * 30; // Random depth
+    
     planes.push({
-      key: `img:${i}`,
+      key: `img:${cx}:${cy}:${i}`,
       position: [p.x, p.y, z],
       width: p.w,
-      image: baseItems[i]!,
-      rotation: (rng() - 0.5) * 0.04,
-      layer: getLayerFromDepth(z),
+      image,
+      rotation: 0,
+      layer: getLayerFromDepth(z)
     });
   }
-
+  
   return { key: `${cx}:${cy}`, cx, cy, planes, constellation, lastSeenFrame: 0 };
 };
 
@@ -916,6 +868,26 @@ const App: React.FC = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [showMeta, setShowMeta] = useState(true);
   const [selectedSeries, setSelectedSeries] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleNav = (direction: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!selectedSeries || !selectedImage) return;
+    const seriesItems = computeSeriesItems(PILGRIM_SERIES_IMAGE_NAMES[selectedSeries] || []).baseItems;
+    const currentIndex = seriesItems.findIndex(img => img.url === selectedImage.url);
+    if (currentIndex === -1) return;
+    const nextIndex = (currentIndex + direction + seriesItems.length) % seriesItems.length;
+    const nextImage = seriesItems[nextIndex];
+    if (nextImage) {
+      setSelectedImage(nextImage);
+      if (scrollRef.current) {
+        const thumb = scrollRef.current.children[nextIndex + 1] as HTMLElement; // +1 for <style>
+        if (thumb) {
+          thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+    }
+  };
 
   return (
     <div style={{ width: '100vw', height: '100vh', margin: 0, overflow: 'hidden', background: '#050506' }}>
@@ -933,15 +905,18 @@ const App: React.FC = () => {
       >
         <fog attach="fog" args={['#070709', 30, 150]} />
         <InfinitePilgrim
-          key={selectedSeries ?? 'menu'}
-          seriesId={selectedSeries ?? undefined}
+          key="menu"
+          seriesId={undefined}
           onImageOpen={(image) => {
-            if (!selectedSeries) {
-              setSelectedSeries(image.fileName);
+            const seriesId = image.fileName.split('/')[1] || image.fileName;
+            setSelectedSeries(seriesId);
+            const seriesItems = computeSeriesItems(PILGRIM_SERIES_IMAGE_NAMES[seriesId] || []).baseItems;
+            if (seriesItems.length > 0) {
+              setSelectedImage(seriesItems[0]!);
             } else {
               setSelectedImage(image);
-              setShowMeta(true);
             }
+            setShowMeta(true);
           }}
         />
       </Canvas>
@@ -966,22 +941,20 @@ const App: React.FC = () => {
         }}
       />
       
-      {!selectedSeries && (
-        <div style={{
-          position: 'absolute',
-          top: 76,
-          left: 84,
-          color: 'rgba(245, 245, 245, 0.82)',
-          fontSize: 34,
-          fontWeight: 400,
-          textTransform: 'uppercase',
-          letterSpacing: '0.2em',
-          pointerEvents: 'none',
-          zIndex: 10,
-        }}>
-          PILGRIM
-        </div>
-      )}
+      <div style={{
+        position: 'absolute',
+        top: 76,
+        left: 84,
+        color: 'rgba(245, 245, 245, 0.82)',
+        fontSize: 34,
+        fontWeight: 400,
+        textTransform: 'uppercase',
+        letterSpacing: '0.2em',
+        pointerEvents: 'none',
+        zIndex: 10,
+      }}>
+        PILGRIM
+      </div>
 
       <div
         style={{
@@ -993,49 +966,22 @@ const App: React.FC = () => {
           zIndex: 10,
         }}
       >
-        {!selectedSeries && (
-          <a
-            href="/"
-            aria-label="Back to homepage"
-            style={{
-              display: 'inline-block',
-              color: 'rgba(245,245,245,0.7)',
-
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              textDecoration: 'underline',
-              border: 'none',
-              background: 'none',
-              padding: '8px 0',
-              pointerEvents: 'auto',
-            }}
-          >
-            HOME
-          </a>
-        )}
-        {selectedSeries && (
-          <button
-            onClick={() => setSelectedSeries(null)}
-            style={{
-              background: 'none',
-              color: 'rgba(245,245,245,0.7)',
-
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              textDecoration: 'underline',
-              border: 'none',
-              padding: '8px 0',
-              pointerEvents: 'auto',
-              cursor: 'pointer',
-            }}
-          >
-            BACK
-          </button>
-        )}
+        <button
+          onClick={() => setShowHelp((value) => !value)}
+          style={{
+            background: 'none',
+            color: 'rgba(245,245,245,0.7)',
+            fontSize: 13,
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            border: 'none',
+            padding: '8px 0',
+            cursor: 'pointer',
+          }}
+        >
+          {showHelp ? 'Hide Help' : 'Help'}
+        </button>
       </div>
       <button
         type="button"
@@ -1095,7 +1041,7 @@ const App: React.FC = () => {
         <div
           role="dialog"
           aria-modal="true"
-          onClick={() => setSelectedImage(null)}
+          onClick={() => { setSelectedImage(null); setSelectedSeries(null); }}
           style={{
             position: 'fixed',
             inset: 0,
@@ -1127,7 +1073,7 @@ const App: React.FC = () => {
                   {showMeta ? 'Hide details' : 'Show details'}
                 </button>
               </div>
-              <button type="button" onClick={() => setSelectedImage(null)} style={modalButtonStyle}>
+              <button type="button" onClick={() => { setSelectedImage(null); setSelectedSeries(null); }} style={modalButtonStyle}>
                 Close
               </button>
             </div>
@@ -1138,13 +1084,64 @@ const App: React.FC = () => {
                 overflow: 'hidden',
                 border: '1px solid rgba(255,255,255,0.16)',
                 background: '#0a0a0d',
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
               <img
                 src={selectedImage.url}
                 alt={selectedImage.title}
-                style={{ width: '100%', height: '78vh', objectFit: 'contain', display: 'block' }}
+                style={{ width: '100%', height: '65vh', objectFit: 'contain', display: 'block', flex: 1 }}
               />
+              {selectedSeries && (
+                <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(5,5,8,0.8)', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                  <button
+                    onClick={(e) => handleNav(-1, e)}
+                    style={{ background: 'none', border: 'none', color: '#fff', fontSize: 20, cursor: 'pointer', padding: '0 16px', zIndex: 2 }}
+                  >
+                    {'<'}
+                  </button>
+                  <div
+                    ref={scrollRef}
+                    style={{
+                      display: 'flex',
+                      gap: 12,
+                      overflowX: 'auto',
+                      padding: '12px 0',
+                      flex: 1,
+                      scrollbarWidth: 'none', // hide scrollbar for Firefox
+                      msOverflowStyle: 'none' // hide scrollbar for IE/Edge
+                    }}
+                  >
+                    {/* Hide scrollbar for Chrome/Safari using inline style trick or just let it be since scrollbarWidth is set */}
+                    <style>{`
+                      ::-webkit-scrollbar { display: none; }
+                    `}</style>
+                    {computeSeriesItems(PILGRIM_SERIES_IMAGE_NAMES[selectedSeries] || []).baseItems.map((img) => (
+                      <img
+                        key={img.url}
+                        src={img.url}
+                        onClick={(e) => { e.stopPropagation(); setSelectedImage(img); }}
+                        style={{
+                          height: 70,
+                          cursor: 'pointer',
+                          border: selectedImage?.url === img.url ? '2px solid rgba(255,255,255,0.9)' : '2px solid transparent',
+                          borderRadius: 4,
+                          opacity: selectedImage?.url === img.url ? 1 : 0.4,
+                          transition: 'opacity 0.2s, border 0.2s',
+                          objectFit: 'contain'
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={(e) => handleNav(1, e)}
+                    style={{ background: 'none', border: 'none', color: '#fff', fontSize: 20, cursor: 'pointer', padding: '0 16px', zIndex: 2 }}
+                  >
+                    {'>'}
+                  </button>
+                </div>
+              )}
             </div>
             {showMeta ? (
               <div

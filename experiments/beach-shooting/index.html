@@ -11,92 +11,374 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
-        background-color: #000;
-        user-select: none;
-        -webkit-user-select: none;
-        cursor: none; /* We draw our own crosshair */
-      }
-      #game-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-      .header-container {
-        position: absolute;
-        top: 76px;
-        left: 84px;
-        width: min-content; /* Constrain the description to exactly the width of the title word */
-        max-width: calc(100vw - 100px); /* Prevent overflow on very small screens */
-        font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-        z-index: 100;
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
+        background-color: #2b2b2b;
+        font-family: ui-serif, Georgia, serif;
+        color: #333;
       }
 
-      .header-title {
-        color: rgba(245, 245, 245, 0.82);
-        font-size: clamp(20px, 3vw, 34px); /* Dynamically shrinks on smaller screens */
-        font-weight: 400;
-        text-transform: uppercase;
+      /* Outer app wrapper to create the "card" effect */
+      #app {
+        width: 100vw;
+        height: 100vh;
+        box-sizing: border-box;
+        padding: 16px;
+      }
+
+      /* Inner content card */
+      #content {
+        width: 100%;
+        height: 100%;
+        background-color: #f6f3eb; /* Warm cream */
+        border-radius: 12px;
+        display: flex;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      }
+
+      /* Left Panel - Game */
+      .left-panel {
+        flex: 1;
+        position: relative;
+        background: #e8e4db;
+        border-right: 1px solid #d4cfc1;
+        /* Custom cursor for shooting */
+        cursor: crosshair; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        box-sizing: border-box;
+      }
+
+      .awning {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 28px;
+        z-index: 10;
+        background: repeating-linear-gradient(
+          90deg,
+          #d92c3a,
+          #d92c3a 32px,
+          #f6f3eb 32px,
+          #f6f3eb 64px
+        );
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      }
+
+      #game-container {
+        /* Reduced by 20% */
+        width: min(80%, calc((100vh - 96px) * (779 / 708) * 0.8));
+        aspect-ratio: 779 / 708;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #game-container::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /* Box is sized so outer balloons dramatically leak over the wooden frame */
+        width: 91%;
+        height: 89%;
+        box-sizing: border-box;
+        border: 24px solid #6b4c3a;
+        border-top-color: #825d48; /* highlight */
+        border-bottom-color: #4a3427; /* shadow */
+        border-left-color: #5c4032;
+        border-right-color: #5c4032;
+        background: #dfdacd;
+        z-index: 0;
+        border-radius: 4px;
+        box-shadow: 
+          inset 0 6px 15px rgba(0,0,0,0.5), /* Inner shadow of frame */
+          0 12px 30px rgba(0,0,0,0.35); /* Outer drop shadow */
+      }
+
+      #game-container canvas {
+        z-index: 1;
+      }
+      /* Right Panel - Typography & UI */
+      .right-panel {
+        width: 520px;
+        padding: 48px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+
+      .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-size: 11px;
         letter-spacing: 0.2em;
-        pointer-events: none;
-        line-height: 1.25;
+        color: #7b7871;
+        text-transform: uppercase;
+      }
+      .top-row::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #d4cfc1;
+        margin: 0 16px;
+      }
+
+      .title {
+        font-size: 34px;
+        font-weight: 400;
+        letter-spacing: 0.15em;
+        margin: 0 0 8px 0;
+        color: #1a1a1a;
+      }
+
+      .subtitle {
+        font-size: 14px;
+        font-weight: 400;
+        color: #6a6862;
+        margin: 0 0 32px 0;
+      }
+      .subtitle .italic {
+        font-style: italic;
+        color: #8c8981;
+      }
+
+      .divider {
+        width: 100%;
+        height: 1px;
+        background: #d4cfc1;
+        margin-bottom: 32px;
+      }
+
+      .desc {
+        font-size: 14px;
+        line-height: 1.7;
+        color: #4a4843;
+        margin-bottom: 24px;
+      }
+      .desc.bold-spaced {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        font-size: 12px;
+        color: #3a3834;
+        margin: 32px 0;
+      }
+
+      /* Interactive Area */
+      .interactive-area {
+        margin-top: auto; /* Push to bottom slightly */
+        margin-bottom: 48px;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+      }
+      .interactive-label {
+        font-size: 11px;
+        color: #8c8981;
+        letter-spacing: 0.15em;
+        margin-bottom: 16px;
+        display: block;
+      }
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .checkbox-grid label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        color: #3a3834;
+        cursor: pointer;
+      }
+      .checkbox-grid input[type="checkbox"] {
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 1.5px solid #d92c3a;
+        border-radius: 2px;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+      }
+      .checkbox-grid input[type="checkbox"]:checked::after {
+        content: '×';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #d92c3a;
+        font-size: 20px;
+        line-height: 1;
+      }
+      
+      .result-sentence {
+        font-family: ui-serif, Georgia, serif;
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 0.1em;
+        color: #1a1a1a;
         margin: 0;
       }
 
-      .header-desc {
-        color: rgba(245, 245, 245, 0.75);
-        font-size: clamp(12px, 1.2vw, 15px); /* Dynamically shrinks slightly to prevent getting too long */
-        line-height: 1.6;
-        text-transform: none;
-        letter-spacing: 0.04em;
-        pointer-events: auto;
+      /* Footer */
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        color: #7b7871;
       }
-      .header-desc p {
-        margin-top: 0;
-        margin-bottom: 1em;
+      .footer-left .field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
       }
-      .header-desc p:last-child {
-        margin-bottom: 0;
+      .footer-left .field .line {
+        flex: 1;
+        min-width: 80px;
+        border-bottom: 1px solid #d4cfc1;
       }
-      
+      .footer-left .fields-row {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+      .footer-left .author {
+        letter-spacing: 0.25em;
+      }
+      .footer-right {
+        text-align: right;
+      }
+      .footer-right .stats {
+        margin-bottom: 8px;
+      }
+      .footer-right strong {
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-left: 8px;
+      }
+
+            .global-home-btn {
+        position: fixed;
+        top: 36px;
+        left: 36px;
+        width: 40px;
+        height: 40px;
+        color: #000000;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 180ms ease, opacity 180ms ease, transform 180ms ease;
+      }
+      .global-home-btn:hover {
+        color: #d92c3a;
+        transform: scale(1.1);
+      }
+      .global-home-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+
       .back-btn {
         position: fixed;
         bottom: 30px;
-        left: 30px;
-        color: rgba(245, 245, 245, 0.7);
+        left: 36px;
+        color: #000000;
+        font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
         font-size: 13px;
         font-weight: 700;
         letter-spacing: 0.15em;
-        text-transform: uppercase;
-        text-decoration: underline;
-        padding: 8px 0;
-        transition: color 180ms ease, opacity 180ms ease;
-        z-index: 100;
-        pointer-events: auto;
-        font-family: "Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+        text-decoration: none;
+        z-index: 9999;
+        transition: color 200ms ease;
       }
       .back-btn:hover {
-        color: white;
-        opacity: 0.9;
+        color: #d92c3a;
       }
     </style>
   </head>
   <body>
-    <div id="game-container"></div>
-    
-    <div class="header-container">
-      <h1 class="header-title">Sthithapragya</h1>
-      <div class="header-desc">
-        <p>Sthithapragya is a shoot-the-balloon stall popularly seen at carnivals. There is something distinct about the balloons - each carry words which form the phrase I - Am - Not - Happy - I - am - Not - Unhappy.</p>
-        <p>Players are invited to test their skill in this game of chance. They mark their target. Shoot the word. The result seals their fate in that moment.</p>
-        <p>Choksi's interactive piece plays on this basic human search for happiness. The work soon turns into a game that goes awry at the final text that remains which determines one's state of un/happiness. It thus becomes an introspection into the importance attached to the notion of happiness and how controlled our lives become in our perpetual hunger to attain it.</p>
+
+    <a class="back-btn" href="javascript:history.back()">BACK</a>
+    <a href="/" class="global-home-btn" aria-label="Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+    </a>
+
+    <div id="app">
+      <div id="content">
+        
+        <div class="left-panel">
+          <div id="game-container"></div>
+        </div>
+
+        <div class="right-panel">
+          <div class="top-row">
+            <span>SHOOT THE BALLOON</span>
+            <span>A GAME OF CHANCE</span>
+          </div>
+
+          <h1 class="title">STHITHAPRAGYA</h1>
+          <h2 class="subtitle">स्थितप्रज्ञ <span class="italic">one of steady mind</span></h2>
+
+          <div class="divider"></div>
+
+          <p class="desc">
+            A shoot-the-balloon stall, the kind that stands at the edge of every carnival. Every balloon on the wall carries a word, and together they say one thing twice:
+          </p>
+          <p class="desc">
+            Mark your target. Shoot the word. What survives on the wall is the sentence you leave with. <strong>The game does not end when you win; it ends when the wall stops making sense.</strong>
+          </p>
+
+          <div class="interactive-area">
+            <span class="interactive-label">(CHECK ALL THAT APPLY)</span>
+            <div class="checkbox-grid">
+              <label><input type="checkbox" id="cb-iam" checked /> I AM</label>
+              <label><input type="checkbox" id="cb-happy" checked /> HAPPY</label>
+              <label><input type="checkbox" id="cb-not" checked /> NOT</label>
+              <label><input type="checkbox" id="cb-unhappy" /> UNHAPPY</label>
+            </div>
+            <h3 id="result-sentence" class="result-sentence">I AM NOT HAPPY</h3>
+            
+            <div class="shot-words-container" style="margin-top: 32px;">
+              <span class="interactive-label">WORDS SHOT</span>
+              <p id="shot-words-list" class="result-sentence" style="min-height: 20px; word-break: break-word;">
+                <!-- shot words injected here -->
+              </p>
+            </div>
+          </div>
+
+          <div class="footer">
+            <div class="footer-left">
+              <div class="author">SURUCHI CHOKSI</div>
+            </div>
+            <div class="footer-right">
+              <div class="stats">BALLOONS <strong id="balloons-count">76</strong></div>
+              <div class="stats">SHOTS <strong id="shots-count">00</strong></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-    
-    <a class="back-btn" href="/painter.html">BACK</a>
 
     <script type="module" src="./main.ts"></script>
   </body>

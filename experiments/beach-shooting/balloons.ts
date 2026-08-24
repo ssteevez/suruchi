@@ -8,15 +8,16 @@ export interface BalloonState {
   colorTop: string;
   colorBottom: string;
   word: string;
+  rotation: number;
 }
 
 export const BALLOON_WIDTH = 76;
-export const BALLOON_HEIGHT = 152; // strict 1:2 ratio
+export const BALLOON_HEIGHT = 100; // slightly rounder
 
-export const COLS = 7;
-export const ROWS = 4;
-export const SPACING_X = 135;
-export const SPACING_Y = 210;
+export const COLS = 10;
+export const ROWS = 9;
+export const SPACING_X = 74;
+export const SPACING_Y = 76;
 
 // Row y offsets relative to boardCenterY (computed once, reused in renderer)
 const GRID_START_Y = -((ROWS - 1) * SPACING_Y) / 2;
@@ -24,22 +25,20 @@ const GRID_START_Y = -((ROWS - 1) * SPACING_Y) / 2;
 export { GRID_START_Y };
 
 const PALETTES: Array<[string, string]> = [
-  ['#FF8C00', '#DC143C'],  // Marigold / Vermillion
-  ['#00CED1', '#FF69B4'],  // Cyan / Hot Pink
-  ['#32CD32', '#8A2BE2'],  // Lime / Violet
-  ['#4169E1', '#FF4500'],  // Cobalt / Orange Red
-  ['#FFD700', '#FF1493'],  // Gold / Deep Pink
-  ['#FF6347', '#1E90FF'],  // Tomato / Dodger Blue
-  ['#ADFF2F', '#FF4500'],  // Chartreuse / Orange Red
-  ['#FF1493', '#FFD700'],  // Deep Pink / Gold
-  ['#00FA9A', '#FF4500'],  // Spring Green / Orange
+  ['#d92c3a', '#b7222f'], // Red
+  ['#f3752b', '#d36220'], // Orange
+  ['#facf15', '#d9b20b'], // Yellow
+  ['#00a651', '#008741'], // Green
+  ['#1c75bc', '#165c96'], // Blue
+  ['#662d91', '#4f2272'], // Purple
 ];
 
-const WORDS = ['i', 'am', 'not', 'happy', 'unhappy'] as const;
+const WORDS = ['I', 'AM', 'NOT', 'HAPPY', 'UNHAPPY'] as const;
 
 export function initBalloons(): BalloonState[] {
   const balloons: BalloonState[] = [];
-  const startX = -((COLS - 1) * SPACING_X) / 2;
+  // Center is offset by half the stagger (SPACING_X / 4)
+  const startX = -((COLS - 1) * SPACING_X) / 2 - (SPACING_X / 4);
   let id = 0;
 
   for (let r = 0; r < ROWS; r++) {
@@ -47,16 +46,20 @@ export function initBalloons(): BalloonState[] {
       const paletteIdx = Math.floor(Math.random() * PALETTES.length);
       const palette = PALETTES[paletteIdx] ?? PALETTES[0]!;
       const word = WORDS[Math.floor(Math.random() * WORDS.length)]!;
+      
+      const stagger = (r % 2) * (SPACING_X / 2);
+      
       balloons.push({
         id: id++,
         col: c,
         row: r,
-        x: startX + c * SPACING_X,
+        x: startX + c * SPACING_X + stagger,
         y: GRID_START_Y + r * SPACING_Y,
         alive: true,
         colorTop: palette[0],
         colorBottom: palette[1],
         word,
+        rotation: (Math.random() - 0.5) * 0.25, // +/- ~14 degrees
       });
     }
   }
