@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 
-const CALIBRATION_MODE: 'NONE' | 'BOX' | 'POLYGON' = 'NONE';
+const CALIBRATION_MODE = 'NONE' as string;
 const IMAGE_ASPECT_RATIO = 11648 / 4800; // Intrinsic dimensions of the assemblage
 
 interface Box {
@@ -117,6 +117,7 @@ const App = () => {
         
         const curr = scenes[currentSceneIndex];
         const target = scenes[nextIndex];
+        if (!curr || !target) return;
         
         const dx = target.x - curr.x;
         const dy = target.y - curr.y;
@@ -322,9 +323,9 @@ const App = () => {
         {/* CAMERA (THE ARTWORKS) */}
         <motion.div 
           animate={CALIBRATION_MODE !== 'NONE' ? { x: 0, y: 0, scale: 1 } : { 
-            x: `${scenes[currentSceneIndex].x}%`, 
-            y: `${scenes[currentSceneIndex].y}%`, 
-            scale: scenes[currentSceneIndex].scale 
+            x: `${scenes[currentSceneIndex]?.x ?? 0}%`, 
+            y: `${scenes[currentSceneIndex]?.y ?? 0}%`, 
+            scale: scenes[currentSceneIndex]?.scale ?? 1 
           }}
           transition={{ 
             duration: transitionDuration,

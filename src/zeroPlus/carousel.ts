@@ -417,6 +417,7 @@ export function initCarousel(): Carousel {
   const openLightbox = (index: number): void => {
     currentLightboxIndex = index;
     const img = images[index];
+    if (!img) return;
     lbImg.src = img.src;
     lbImg.alt = img.alt;
     lbTitle.textContent = `Untitled Painting ${index + 1}`;
