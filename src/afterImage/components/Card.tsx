@@ -4,6 +4,8 @@ import { motion, MotionValue, useTransform, useVelocity, useSpring } from 'frame
 interface CardProps {
   index: number;
   src: string;
+  title: string;
+  description: string;
   containerX: MotionValue<number>;
   windowWidth: number;
   slideWidth: number;
@@ -15,6 +17,8 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ 
   index, 
   src, 
+  title,
+  description,
   containerX, 
   windowWidth,
   slideWidth, 
@@ -161,6 +165,25 @@ const Card: React.FC<CardProps> = ({
           }} 
         />
       </div>
+
+      {/* Description Tag - Only visible when the card is in focus */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          bottom: '-35px',
+          left: 0,
+          width: '100%',
+          textAlign: 'center',
+          opacity: incidentOpacity, // Reuse incident lighting to fade text naturally!
+          color: 'rgba(255, 255, 255, 0.65)',
+          fontSize: '11px',
+          letterSpacing: '0.04em',
+          fontFamily: '"Neue Haas Grotesk Text Pro", -apple-system, sans-serif',
+          pointerEvents: 'none'
+        }}
+      >
+        {description}
+      </motion.div>
     </motion.div>
   );
 };

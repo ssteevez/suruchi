@@ -17,27 +17,50 @@ interface Point {
   y: number;
 }
 
-const ARTWORKS: Box[] = [
-  { "id": 1787419831574, "x": 1.1529592621060722, "y": 14.631024753483231, "w": 7.763259031514221, "h": 25.131621047732622 },
-  { "id": 1787419843464, "x": 6.878306878306878, "y": 49.28044049555751, "w": 7.738095238095239, "h": 18.901263921912154 },
-  { "id": 1787419853207, "x": 6.944444444444445, "y": 70.58440745839069, "w": 7.539682539682541, "h": 9.770992366412216 },
-  { "id": 1787419860464, "x": 19.378306878306876, "y": 8.434488799899889, "w": 10.25132275132275, "h": 24.988111625578775 },
-  { "id": 1787419867394, "x": 19.510582010582013, "y": 36.30584407458391, "w": 10.05291005291005, "h": 18.58090351645601 },
-  { "id": 1787419876760, "x": 19.378306878306876, "y": 60.81341509197847, "w": 10.25132275132275, "h": 24.98811162557878 },
-  { "id": 1787419888408, "x": 31.67989417989418, "y": 34.223501439119005, "w": 7.738095238095237, "h": 9.770992366412216 },
-  { "id": 1787419896295, "x": 31.67989417989418, "y": 48.63971968464523, "w": 9.06084656084656, "h": 22.10486797647353 },
-  { "id": 1787419903346, "x": 40.54232804232804, "y": 21.409085220873482, "w": 11.574074074074076, "h": 27.871355274684024 },
-  { "id": 1787419911175, "x": 40.07936507936508, "y": 75.38981354023277, "w": 3.9682539682539613, "h": 9.931172569140273 },
-  { "id": 1787419917137, "x": 57.804232804232804, "y": 25.894130897259416, "w": 7.671957671957678, "h": 24.507571017394568 },
-  { "id": 1787419925370, "x": 52.050264550264544, "y": 55.68764860468026, "w": 11.375661375661387, "h": 27.71117507195595 },
-  { "id": 1787419932203, "x": 68.98148148148148, "y": 1.7069202853209862, "w": 10.251322751322746, "h": 18.90126392191215 },
-  { "id": 1787419941944, "x": 72.88359788359789, "y": 25.733950694531348, "w": 7.804232804232797, "h": 24.988111625578778 },
-  { "id": 1787419952687, "x": 81.87830687830689, "y": 25.573770491803277, "w": 7.738095238095227, "h": 24.98811162557877 },
-  { "id": 1787419961408, "x": 90.8068783068783, "y": 25.573770491803277, "w": 7.804232804232811, "h": 25.14829182830685 },
-  { "id": 1787419967662, "x": 78.04232804232805, "y": 55.68764860468026, "w": 8.928571428571416, "h": 21.7845075710174 },
-  { "id": 1787419974766, "x": 88.16137566137566, "y": 55.84782880740834, "w": 8.994708994709, "h": 21.944687773745464 },
-  { "id": 1787419981708, "x": 72.81746031746032, "y": 82.918283068452, "w": 7.804232804232797, "h": 12.974596420973612 }
+const ARTWORKS: (Box & { image: string })[] = [
+  {"id":1787419831574,"x":1.1529592621060722,"y":14.631024753483231,"w":7.763259031514221,"h":25.131621047732622,"image":"IMG_1383"},
+  {"id":1787419843464,"x":6.878306878306878,"y":49.28044049555751,"w":7.738095238095239,"h":18.901263921912154,"image":"IMG_1376"},
+  {"id":1787419853207,"x":6.944444444444445,"y":70.58440745839069,"w":7.539682539682541,"h":9.770992366412216,"image":"IMG_1386"},
+  {"id":1787419860464,"x":19.378306878306876,"y":8.434488799899889,"w":10.25132275132275,"h":24.988111625578775,"image":"IMG_1533"},
+  {"id":1787419867394,"x":19.510582010582013,"y":36.30584407458391,"w":10.05291005291005,"h":18.58090351645601,"image":"IMG_1374"},
+  {"id":1787419876760,"x":19.378306878306876,"y":60.81341509197847,"w":10.25132275132275,"h":24.98811162557878,"image":"IMG_1381"},
+  {"id":1787419888408,"x":31.67989417989418,"y":34.223501439119005,"w":7.738095238095237,"h":9.770992366412216,"image":"IMG_1385"},
+  {"id":1787419896295,"x":31.67989417989418,"y":48.63971968464523,"w":9.06084656084656,"h":22.10486797647353,"image":"IMG_1446"},
+  {"id":1787419903346,"x":40.54232804232804,"y":21.409085220873482,"w":11.574074074074076,"h":27.871355274684024,"image":"IMG_1379"},
+  {"id":1787419911175,"x":40.07936507936508,"y":75.38981354023277,"w":3.9682539682539613,"h":9.931172569140273,"image":"IMG_1554"},
+  {"id":1787419917137,"x":57.804232804232804,"y":25.894130897259416,"w":7.671957671957678,"h":24.507571017394568,"image":"IMG_1384"},
+  {"id":1787419925370,"x":52.050264550264544,"y":55.68764860468026,"w":11.375661375661387,"h":27.71117507195595,"image":"IMG_1535"},
+  {"id":1787419932203,"x":68.98148148148148,"y":1.7069202853209862,"w":10.251322751322746,"h":18.90126392191215,"image":"IMG_1388"},
+  {"id":1787419941944,"x":72.88359788359789,"y":25.733950694531348,"w":7.804232804232797,"h":24.988111625578778,"image":"IMG_1373"},
+  {"id":1787419952687,"x":81.87830687830689,"y":25.573770491803277,"w":7.738095238095227,"h":24.98811162557877,"image":"IMG_1377"},
+  {"id":1787419961408,"x":90.8068783068783,"y":25.573770491803277,"w":7.804232804232811,"h":25.14829182830685,"image":"IMG_1390"},
+  {"id":1787419967662,"x":78.04232804232805,"y":55.68764860468026,"w":8.928571428571416,"h":21.7845075710174,"image":"IMG_1553"},
+  {"id":1787419974766,"x":88.16137566137566,"y":55.84782880740834,"w":8.994708994709,"h":21.944687773745464,"image":"IMG_1380"},
+  {"id":1787419981708,"x":72.81746031746032,"y":82.918283068452,"w":7.804232804232797,"h":12.974596420973612,"image":"IMG_1378"}
 ];
+
+const DIMENSIONS: Record<string, string> = {
+  "1787419831574": "28.7 x 8.9 inches",
+  "1787419843464": "21.6 x 8.8 inches",
+  "1787419853207": "11.2 x 8.6 inches",
+  "1787419860464": "28.5 x 11.7 inches",
+  "1787419867394": "21.2 x 11.5 inches",
+  "1787419876760": "28.5 x 11.7 inches",
+  "1787419888408": "11.2 x 8.8 inches",
+  "1787419896295": "25.2 x 10.3 inches",
+  "1787419903346": "31.8 x 13.2 inches",
+  "1787419911175": "11.3 x 4.5 inches",
+  "1787419917137": "27.9 x 8.7 inches",
+  "1787419925370": "31.5 x 12.9 inches",
+  "1787419932203": "21.5 x 11.7 inches",
+  "1787419941944": "28.4 x 8.9 inches",
+  "1787419952687": "28.4 x 8.8 inches",
+  "1787419961408": "28.6 x 8.9 inches",
+  "1787419967662": "24.8 x 10.2 inches",
+  "1787419974766": "25.0 x 10.2 inches",
+  "1787419981708": "14.8 x 8.9 inches",
+};
+
 
 const leftClip = `polygon(0% 0%, 53.77% 0%, 53.77% 4.75%, 53.97% 51.84%, 47.95% 53.12%, 48.68% 98.94%, 48.68% 100%, 0% 100%)`;
 const rightClip = `polygon(100% 0%, 100% 100%, 48.68% 100%, 48.68% 98.94%, 47.95% 53.12%, 53.97% 51.84%, 53.77% 4.75%, 53.77% 0%)`;
@@ -100,21 +123,34 @@ const App = () => {
   const [transitionDuration, setTransitionDuration] = useState(1.5);
   
   const [textRevealed, setTextRevealed] = useState(false);
+  const transitionBlocker = React.useRef(false);
 
-  // Keyboard Navigation
+  // Consolidated Navigation (Keyboard + Scroll)
   React.useEffect(() => {
     if (CALIBRATION_MODE !== 'NONE' || textRevealed) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
+    
+    const navigateTo = (direction: 1 | -1) => {
+      if (transitionBlocker.current) return;
       let nextIndex = currentSceneIndex;
-      if (['ArrowRight', 'ArrowDown'].includes(e.key)) {
-        nextIndex = Math.min(scenes.length - 1, currentSceneIndex + 1);
-      } else if (['ArrowLeft', 'ArrowUp'].includes(e.key)) {
+      
+      if (direction === 1) {
+        if (currentSceneIndex >= scenes.length - 1) {
+          // Reached the end! Zoom out and reveal text
+          transitionBlocker.current = true;
+          setCurrentSceneIndex(0);
+          setTransitionDuration(1.5);
+          setTimeout(() => {
+            setTextRevealed(true);
+            transitionBlocker.current = false;
+          }, 1500);
+          return;
+        }
+        nextIndex = currentSceneIndex + 1;
+      } else {
         nextIndex = Math.max(0, currentSceneIndex - 1);
       }
-
+      
       if (nextIndex !== currentSceneIndex) {
-        e.preventDefault();
-        
         const curr = scenes[currentSceneIndex];
         const target = scenes[nextIndex];
         if (!curr || !target) return;
@@ -130,8 +166,37 @@ const App = () => {
         setCurrentSceneIndex(nextIndex);
       }
     };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['ArrowRight', 'ArrowDown', ' '].includes(e.key)) {
+        e.preventDefault();
+        navigateTo(1);
+      } else if (['ArrowLeft', 'ArrowUp'].includes(e.key)) {
+        e.preventDefault();
+        navigateTo(-1);
+      }
+    };
+    
+    let wheelTimeout: any;
+    const handleWheel = (e: WheelEvent) => {
+      if (wheelTimeout || transitionBlocker.current) return;
+      if (Math.abs(e.deltaY) < 30) return; // ignore tiny scrolls
+      
+      wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 800);
+      
+      if (e.deltaY > 0) {
+        navigateTo(1);
+      } else {
+        navigateTo(-1);
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('wheel', handleWheel);
+    };
   }, [currentSceneIndex, scenes, textRevealed]);
 
   const isEndOrStart = currentSceneIndex === 0 || currentSceneIndex === scenes.length - 1;
@@ -351,54 +416,134 @@ const App = () => {
             onPointerCancel={handlePointerUp}
           >
             {/* LEFT HALF */}
-            <motion.picture style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, display: 'block' }}>
-              <source srcSet={imgUrl} type="image/webp" />
-              <motion.img 
-                src={imgFallbackUrl}
-                alt="Assemblage Left"
-                draggable={false}
-                onLoad={() => setImageLoaded(true)}
-                animate={{ 
-                  x: textRevealed ? '-35%' : '0%', 
-                  opacity: imageLoaded ? 1 : 0 
-                }}
-                transition={{ 
-                  duration: 1.8, 
-                  ease: [0.76, 0, 0.24, 1], // Cinematic slow split
-                  opacity: { duration: 1.5 }
-                }}
-                style={{
-                  width: '100%', height: '100%', objectFit: 'fill', 
-                  clipPath: leftClip,
-                  display: 'block',
-                  cursor: CALIBRATION_MODE !== 'NONE' ? 'crosshair' : 'default'
-                }}
-              />
-            </motion.picture>
+            <motion.div
+              animate={{ 
+                x: textRevealed ? '-35%' : '0%', 
+                opacity: imageLoaded ? 1 : 0 
+              }}
+              transition={{ 
+                duration: 1.8, 
+                ease: [0.76, 0, 0.24, 1], // Cinematic slow split
+                opacity: { duration: 1.5 }
+              }}
+              style={{
+                width: '100%', height: '100%', position: 'absolute', top: 0, left: 0,
+                clipPath: leftClip, display: 'block',
+                cursor: CALIBRATION_MODE !== 'NONE' ? 'crosshair' : 'default'
+              }}
+            >
+              <picture style={{ width: '100%', height: '100%', display: 'block', position: 'absolute', top: 0, left: 0 }}>
+                <source srcSet={imgUrl} type="image/webp" />
+                <img src={imgFallbackUrl} alt="Assemblage Left" draggable={false}
+                     onLoad={() => setImageLoaded(true)}
+                     style={{ width: '100%', height: '100%', objectFit: 'fill', display: 'block' }} />
+              </picture>
+              
+              {ARTWORKS.map(box => {
+                if (!box.image) return null;
+                const srcWebp = `/images/painter/i-was-not-among/${box.image}-2400.webp`;
+                const srcJpg = `/images/painter/i-was-not-among/${box.image}-2400.jpg`;
+                return (
+                  <div key={`left-${box.id}`} style={{
+                    position: 'absolute', left: `${box.x}%`, top: `${box.y}%`, width: `${box.w}%`, height: `${box.h}%`, display: 'block',
+                    boxShadow: '4px 8px 20px rgba(0,0,0,0.3), inset 2px 4px 10px rgba(0,0,0,0.5)', // Outer shadow + inset shadow for the void
+                    border: '0.5px solid #000', // Thin wood frame
+                    background: 'linear-gradient(135deg, #555 0%, #1a1a1a 100%)', // Dynamic graded gray floater void
+                    padding: '3px', // Floater gap
+                    boxSizing: 'border-box'
+                  }}>
+                    {/* The Artwork Stretched Canvas */}
+                    <picture style={{ width: '100%', height: '100%', display: 'block', position: 'relative', boxShadow: '1px 2px 6px rgba(0,0,0,0.9)' }}>
+                      <source srcSet={srcWebp} type="image/webp" />
+                      <img src={srcJpg} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} draggable={false} />
+                    </picture>
+
+                    {/* Dimension Label (only visible when zoomed in on this specific artwork) */}
+                    <motion.div
+                      animate={{ opacity: (currentSceneIndex > 0 && ARTWORKS[currentSceneIndex - 1]?.id === box.id) ? 1 : 0 }}
+                      style={{
+                        position: 'absolute',
+                        bottom: '-2px',
+                        left: '50%',
+                        transform: 'translate(-50%, 100%) scale(' + (1 / (scenes[currentSceneIndex]?.scale || 1)) + ')',
+                        color: '#666',
+                        fontSize: '11px',
+                        whiteSpace: 'nowrap',
+                        pointerEvents: 'none', zIndex: 10,
+                        letterSpacing: '0.02em',
+                        fontFamily: '"Neue Haas Grotesk Text Pro", -apple-system, sans-serif'
+                      }}
+                    >
+                      {DIMENSIONS[box.id]}
+                    </motion.div>
+                  </div>
+                );
+              })}
+            </motion.div>
 
             {/* RIGHT HALF */}
-            <motion.picture style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, display: 'block' }}>
-              <source srcSet={imgUrl} type="image/webp" />
-              <motion.img 
-                src={imgFallbackUrl}
-                alt="Assemblage Right"
-                draggable={false}
-                animate={{ 
-                  x: textRevealed ? '35%' : '0%', 
-                  opacity: imageLoaded ? 1 : 0 
-                }}
-                transition={{ 
-                  duration: 1.8, 
-                  ease: [0.76, 0, 0.24, 1], // Cinematic slow split
-                  opacity: { duration: 1.5 }
-                }}
-                style={{
-                  width: '100%', height: '100%', objectFit: 'fill', 
-                  clipPath: rightClip,
-                  display: 'block'
-                }}
-              />
-            </motion.picture>
+            <motion.div
+              animate={{ 
+                x: textRevealed ? '35%' : '0%', 
+                opacity: imageLoaded ? 1 : 0 
+              }}
+              transition={{ 
+                duration: 1.8, 
+                ease: [0.76, 0, 0.24, 1], // Cinematic slow split
+                opacity: { duration: 1.5 }
+              }}
+              style={{
+                width: '100%', height: '100%', position: 'absolute', top: 0, left: 0,
+                clipPath: rightClip, display: 'block'
+              }}
+            >
+              <picture style={{ width: '100%', height: '100%', display: 'block', position: 'absolute', top: 0, left: 0 }}>
+                <source srcSet={imgUrl} type="image/webp" />
+                <img src={imgFallbackUrl} alt="Assemblage Right" draggable={false}
+                     style={{ width: '100%', height: '100%', objectFit: 'fill', display: 'block' }} />
+              </picture>
+
+              {ARTWORKS.map(box => {
+                if (!box.image) return null;
+                const srcWebp = `/images/painter/i-was-not-among/${box.image}-2400.webp`;
+                const srcJpg = `/images/painter/i-was-not-among/${box.image}-2400.jpg`;
+                return (
+                  <div key={`right-${box.id}`} style={{
+                    position: 'absolute', left: `${box.x}%`, top: `${box.y}%`, width: `${box.w}%`, height: `${box.h}%`, display: 'block',
+                    boxShadow: '4px 8px 20px rgba(0,0,0,0.3), inset 2px 4px 10px rgba(0,0,0,0.5)', // Outer shadow + inset shadow for the void
+                    border: '0.5px solid #000', // Thin wood frame
+                    background: 'linear-gradient(135deg, #555 0%, #1a1a1a 100%)', // Dynamic graded gray floater void
+                    padding: '3px', // Floater gap
+                    boxSizing: 'border-box'
+                  }}>
+                    {/* The Artwork Stretched Canvas */}
+                    <picture style={{ width: '100%', height: '100%', display: 'block', position: 'relative', boxShadow: '1px 2px 6px rgba(0,0,0,0.9)' }}>
+                      <source srcSet={srcWebp} type="image/webp" />
+                      <img src={srcJpg} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} draggable={false} />
+                    </picture>
+
+                    {/* Dimension Label (only visible when zoomed in on this specific artwork) */}
+                    <motion.div
+                      animate={{ opacity: (currentSceneIndex > 0 && ARTWORKS[currentSceneIndex - 1]?.id === box.id) ? 1 : 0 }}
+                      style={{
+                        position: 'absolute',
+                        bottom: '-2px',
+                        left: '50%',
+                        transform: 'translate(-50%, 100%) scale(' + (1 / (scenes[currentSceneIndex]?.scale || 1)) + ')',
+                        color: '#666',
+                        fontSize: '11px',
+                        whiteSpace: 'nowrap',
+                        pointerEvents: 'none', zIndex: 10,
+                        letterSpacing: '0.02em',
+                        fontFamily: '"Neue Haas Grotesk Text Pro", -apple-system, sans-serif'
+                      }}
+                    >
+                      {DIMENSIONS[box.id]}
+                    </motion.div>
+                  </div>
+                );
+              })}
+            </motion.div>
           </div>
         </motion.div>
       </div>

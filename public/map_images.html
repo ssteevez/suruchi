@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Map Images</title>
+    <style>
+        body { font-family: sans-serif; display: flex; height: 100vh; margin: 0; }
+        #left { width: 300px; overflow-y: auto; border-right: 1px solid #ccc; padding: 10px; background: white; z-index: 10; }
+        #right { flex: 1; position: relative; overflow: auto; background: #eee; display: flex; align-items: center; justify-content: center; }
+        .thumb { width: 100%; margin-bottom: 10px; cursor: grab; border: 2px solid transparent; }
+        .thumb.mapped { opacity: 0.5; }
+        .thumb.selected { border-color: red; }
+        /* The container itself will be sized exactly to the image's intrinsic aspect ratio */
+        #assemblage-container { position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        #assemblage { display: block; width: 100%; height: auto; }
+        .box { position: absolute; border: 2px solid yellow; background: rgba(255, 255, 0, 0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; overflow: hidden; }
+        .box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+        .box.selected { border-color: red; }
+    </style>
+</head>
+<body>
+    <div id="left">
+        <h3>Images</h3>
+        <button onclick="exportMapping()" style="margin-bottom: 15px; padding: 10px; width: 100%; cursor: pointer;">Export Mapping to Clipboard</button>
+        <p>Click an image, then click a box to assign.</p>
+        <div id="thumbs"></div>
+    </div>
+    <div id="right">
+        <!-- We will size this container to fit nicely in the view, keeping aspect ratio -->
+        <div id="assemblage-container" style="width: 1500px; max-width: 90vw;">
+            <img id="assemblage" src="/raw-images/painter/i-was-not-among/Display_I%20Was%20Not,%20Among%20My%20Kind,%20Distinctive.png" />
+            <div id="boxes"></div>
+        </div>
+    </div>
+    <script>
+        const ARTWORKS = [
+          { "id": 1787419831574, "x": 1.1529592621060722, "y": 14.631024753483231, "w": 7.763259031514221, "h": 25.131621047732622 },
+          { "id": 1787419843464, "x": 6.878306878306878, "y": 49.28044049555751, "w": 7.738095238095239, "h": 18.901263921912154 },
+          { "id": 1787419853207, "x": 6.944444444444445, "y": 70.58440745839069, "w": 7.539682539682541, "h": 9.770992366412216 },
+          { "id": 1787419860464, "x": 19.378306878306876, "y": 8.434488799899889, "w": 10.25132275132275, "h": 24.988111625578775 },
+          { "id": 1787419867394, "x": 19.510582010582013, "y": 36.30584407458391, "w": 10.05291005291005, "h": 18.58090351645601 },
+          { "id": 1787419876760, "x": 19.378306878306876, "y": 60.81341509197847, "w": 10.25132275132275, "h": 24.98811162557878 },
+          { "id": 1787419888408, "x": 31.67989417989418, "y": 34.223501439119005, "w": 7.738095238095237, "h": 9.770992366412216 },
+          { "id": 1787419896295, "x": 31.67989417989418, "y": 48.63971968464523, "w": 9.06084656084656, "h": 22.10486797647353 },
+          { "id": 1787419903346, "x": 40.54232804232804, "y": 21.409085220873482, "w": 11.574074074074076, "h": 27.871355274684024 },
+          { "id": 1787419911175, "x": 40.07936507936508, "y": 75.38981354023277, "w": 3.9682539682539613, "h": 9.931172569140273 },
+          { "id": 1787419917137, "x": 57.804232804232804, "y": 25.894130897259416, "w": 7.671957671957678, "h": 24.507571017394568 },
+          { "id": 1787419925370, "x": 52.050264550264544, "y": 55.68764860468026, "w": 11.375661375661387, "h": 27.71117507195595 },
+          { "id": 1787419932203, "x": 68.98148148148148, "y": 1.7069202853209862, "w": 10.251322751322746, "h": 18.90126392191215 },
+          { "id": 1787419941944, "x": 72.88359788359789, "y": 25.733950694531348, "w": 7.804232804232797, "h": 24.988111625578778 },
+          { "id": 1787419952687, "x": 81.87830687830689, "y": 25.573770491803277, "w": 7.738095238095227, "h": 24.98811162557877 },
+          { "id": 1787419961408, "x": 90.8068783068783, "y": 25.573770491803277, "w": 7.804232804232811, "h": 25.14829182830685 },
+          { "id": 1787419967662, "x": 78.04232804232805, "y": 55.68764860468026, "w": 8.928571428571416, "h": 21.7845075710174 },
+          { "id": 1787419974766, "x": 88.16137566137566, "y": 55.84782880740834, "w": 8.994708994709, "h": 21.944687773745464 },
+          { "id": 1787419981708, "x": 72.81746031746032, "y": 82.918283068452, "w": 7.804232804232797, "h": 12.974596420973612 }
+        ];
+        
+        const files = [
+          "IMG_1373.jpg", "IMG_1374.jpg", "IMG_1376.jpg", "IMG_1377.jpg", "IMG_1378.jpg",
+          "IMG_1379.jpg", "IMG_1380.jpg", "IMG_1381.jpg", "IMG_1383.jpg", "IMG_1384.jpg",
+          "IMG_1385.jpg", "IMG_1386.jpg", "IMG_1387.jpg", "IMG_1388.jpg", "IMG_1390.jpg",
+          "IMG_1446.jpg", "IMG_1533.jpg", "IMG_1535.jpg", "IMG_1553.jpg", "IMG_1554.jpg"
+        ];
+
+        const mapping = {};
+        let selectedFile = null;
+
+        const thumbsDiv = document.getElementById('thumbs');
+        files.forEach(f => {
+            const img = document.createElement('img');
+            img.src = "/raw-images/painter/i-was-not-among/" + f;
+            img.className = "thumb";
+            img.id = "thumb-" + f;
+            img.onclick = () => {
+                if (selectedFile) document.getElementById("thumb-"+selectedFile).classList.remove("selected");
+                selectedFile = f;
+                img.classList.add("selected");
+            };
+            thumbsDiv.appendChild(img);
+        });
+
+        const imgEl = document.getElementById('assemblage');
+        const boxesDiv = document.getElementById('boxes');
+        
+        imgEl.onload = () => {
+            // Container takes width: 100% implicitly since it's display block, 
+            // the boxes are positioned absolutely within #assemblage-container
+            ARTWORKS.forEach(box => {
+                const b = document.createElement('div');
+                b.className = "box";
+                b.style.left = box.x + "%";
+                b.style.top = box.y + "%";
+                b.style.width = box.w + "%";
+                b.style.height = box.h + "%";
+                b.onclick = () => {
+                    if (selectedFile) {
+                        mapping[box.id] = selectedFile;
+                        b.innerHTML = `<img src="/raw-images/painter/i-was-not-among/${selectedFile}" />`;
+                        document.getElementById("thumb-"+selectedFile).classList.add("mapped");
+                        document.getElementById("thumb-"+selectedFile).classList.remove("selected");
+                        selectedFile = null;
+                    } else {
+                        // Unassign
+                        const assigned = mapping[box.id];
+                        if (assigned) {
+                            document.getElementById("thumb-"+assigned).classList.remove("mapped");
+                            delete mapping[box.id];
+                            b.innerHTML = "";
+                        }
+                    }
+                };
+                boxesDiv.appendChild(b);
+            });
+        };
+
+        function exportMapping() {
+            navigator.clipboard.writeText(JSON.stringify(mapping, null, 2));
+            alert("Mapping JSON copied to clipboard! Paste it to the agent.");
+        }
+    </script>
+</body>
+</html>

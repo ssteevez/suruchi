@@ -41,8 +41,8 @@ export const SEED_PAINTER_SERIES: PainterSeries[] = [
     ]
   },
   {
-    id: 'painter-photograms',
-    title: 'Photograms',
+    id: 'painter-afterburn',
+    title: 'Afterburn',
     driveLink: '',
     imagesOptimised: false,
     structureBuilt: true, // Structure already exists in code
@@ -53,12 +53,12 @@ export const SEED_PAINTER_SERIES: PainterSeries[] = [
     status: 'review',
     updatedAt: Date.now(),
     artworks: [
-      createArtwork('painter-photograms', 'pg-1', '6O8B9657.jpg', '/images/painter/photograms/6O8B9657.jpg', '/images/painter/photograms/6O8B9657.jpg'),
-      createArtwork('painter-photograms', 'pg-2', '6O8B9658.jpg', '/images/painter/photograms/6O8B9658.jpg', '/images/painter/photograms/6O8B9658.jpg'),
-      createArtwork('painter-photograms', 'pg-3', 'IMG_8711.jpg', '/images/painter/photograms/IMG_8711.jpg', '/images/painter/photograms/IMG_8711.jpg'),
-      createArtwork('painter-photograms', 'pg-4', 'IMG_8712.jpg', '/images/painter/photograms/IMG_8712.jpg', '/images/painter/photograms/IMG_8712.jpg'),
-      createArtwork('painter-photograms', 'pg-5', 'IMG_8713.jpg', '/images/painter/photograms/IMG_8713.jpg', '/images/painter/photograms/IMG_8713.jpg'),
-      createArtwork('painter-photograms', 'pg-6', 'canvas.jpg', '/images/painter/photograms/canvas.jpg', '/images/painter/photograms/canvas.jpg')
+      createArtwork('painter-afterburn', 'pg-1', '6O8B9657.jpg', '/images/painter/afterburn/6O8B9657.jpg', '/images/painter/afterburn/6O8B9657.jpg'),
+      createArtwork('painter-afterburn', 'pg-2', '6O8B9658.jpg', '/images/painter/afterburn/6O8B9658.jpg', '/images/painter/afterburn/6O8B9658.jpg'),
+      createArtwork('painter-afterburn', 'pg-3', 'IMG_8711.jpg', '/images/painter/afterburn/IMG_8711.jpg', '/images/painter/afterburn/IMG_8711.jpg'),
+      createArtwork('painter-afterburn', 'pg-4', 'IMG_8712.jpg', '/images/painter/afterburn/IMG_8712.jpg', '/images/painter/afterburn/IMG_8712.jpg'),
+      createArtwork('painter-afterburn', 'pg-5', 'IMG_8713.jpg', '/images/painter/afterburn/IMG_8713.jpg', '/images/painter/afterburn/IMG_8713.jpg'),
+      createArtwork('painter-afterburn', 'pg-6', 'canvas.jpg', '/images/painter/afterburn/canvas.jpg', '/images/painter/afterburn/canvas.jpg')
     ]
   }
 ];

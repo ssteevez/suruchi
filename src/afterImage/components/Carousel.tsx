@@ -4,7 +4,7 @@ import type { PanInfo } from 'framer-motion';
 import Card from './Card';
 
 interface CarouselProps {
-  images: string[];
+  images: { src: string; title: string; description: string; }[];
 }
 
 const Carousel: React.FC<CarouselProps> = ({ images }) => {
@@ -24,6 +24,7 @@ const Carousel: React.FC<CarouselProps> = ({ images }) => {
   // Extremely heavy mass for the visual spring so it feels like a heavy physical object
   const smoothedX = useSpring(x, { damping: 40, stiffness: 120, mass: 8 });
 
+
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
@@ -31,6 +32,18 @@ const Carousel: React.FC<CarouselProps> = ({ images }) => {
     snapTo(0);
     return () => window.removeEventListener('resize', handleResize);
   }, [windowWidth]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        snapToClosest(wheelTarget.current - step);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        snapToClosest(wheelTarget.current + step);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [step]);
 
   // Calculates the raw X coordinate required to perfectly center a specific index
   const getCenterForIndex = (index: number) => {
@@ -88,6 +101,7 @@ const Carousel: React.FC<CarouselProps> = ({ images }) => {
     });
   };
 
+
   // Wheel handling for scrolling
   const wheelTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -123,11 +137,13 @@ const Carousel: React.FC<CarouselProps> = ({ images }) => {
 
       {/* Rendering layer */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-        {images.map((src, i) => (
+        {images.map((image, i) => (
           <Card 
             key={i}
             index={i}
-            src={src}
+            src={image.src}
+            title={image.title}
+            description={image.description}
             containerX={smoothedX} // Pass the smoothed spring value down
             windowWidth={windowWidth}
             slideWidth={slideWidth}

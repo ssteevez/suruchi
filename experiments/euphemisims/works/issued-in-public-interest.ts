@@ -34,7 +34,7 @@ const HORIZONTAL_MARGIN_PERCENT = 20;
 const SCRAMBLE_VIEWPORT_INSET = 0.04;
 /** Higher = more scroll needed between each word resolving. */
 const STAGGER_PER_WORD = 1.05;
-const BODY_FONT_MIN_PX = 8;
+const BODY_FONT_MIN_PX = 16;
 /** Line-height ratio — lower = heavier overlap between lines. */
 const BODY_LINE_HEIGHT = 0.46;
 /** How much of the margin box the body may fill when fitting type. */
@@ -354,8 +354,8 @@ const work: TextWorkModule = {
       titleBlock.style.width = `${w}px`;
       titleEl.style.width = '100%';
 
-      const maxPx = Math.min(72, window.innerWidth * 0.062);
-      const minPx = 14;
+      const maxPx = Math.min(144, window.innerWidth * 0.124);
+      const minPx = 28;
       let sizePx = maxPx;
       titleEl.style.fontSize = `${sizePx}px`;
 
@@ -532,9 +532,19 @@ const work: TextWorkModule = {
 
     const updateScroll = (): void => {
       if (!layoutReady) return;
-      const scrollSpan = window.innerHeight * scrollExtraVh();
-      const progress = clamp01(root.scrollTop / Math.max(1, scrollSpan));
+      
+      const poemSpan = window.innerHeight * scrollExtraVh();
+      const progress = clamp01(root.scrollTop / Math.max(1, poemSpan));
       applyScrambleState(progress);
+      
+      // The animation natively completes at finalProgress.
+      // We trigger the stamp the moment the last letter locks into place.
+      const finalProgress = STAGGER_PER_WORD / (1 + STAGGER_PER_WORD);
+      if (progress >= finalProgress - 0.001) {
+        stamp.style.opacity = '1';
+      } else {
+        stamp.style.opacity = '0';
+      }
     };
 
     const onScroll = (): void => {
@@ -546,8 +556,29 @@ const work: TextWorkModule = {
     };
 
     const setSpacerHeight = (): void => {
-      spacer.style.height = `${window.innerHeight * scrollExtraVh()}px`;
+      // The scramble math natively completes when progress = STAGGER_PER_WORD / (1 + STAGGER_PER_WORD).
+      // We truncate the physical scroll height exactly at that point to eliminate the dead scroll space!
+      const finalProgress = STAGGER_PER_WORD / (1 + STAGGER_PER_WORD);
+      spacer.style.height = `${window.innerHeight * scrollExtraVh() * finalProgress + window.innerHeight}px`;
     };
+
+    // Create stamp image
+    const stamp = document.createElement('img');
+    stamp.src = '/images/poet/euphemisms/IssuedInPublicInterest/byorder.png';
+    stamp.style.position = 'fixed';
+    stamp.style.bottom = '10vh';
+    stamp.style.left = '50%';
+    stamp.style.transform = 'translateX(-50%)';
+    stamp.style.width = 'min(400px, 80vw)';
+    stamp.style.opacity = '0';
+    stamp.style.pointerEvents = 'none';
+    stamp.style.zIndex = '50';
+    stamp.style.transition = 'none';
+    // Initial state: invisible, exactly in final position
+    stamp.style.transform = 'translateX(-50%)';
+    
+    // Add it to the document body so it escapes any potential clipping contexts
+    document.body.appendChild(stamp);
 
     const init = (): void => {
       setSpacerHeight();
@@ -585,6 +616,7 @@ const work: TextWorkModule = {
       document.body.style.color = '';
       style.remove();
       container.innerHTML = '';
+      stamp.remove();
     };
   },
 };

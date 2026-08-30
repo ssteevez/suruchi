@@ -3,12 +3,13 @@
 Volatile working memory. This file is rewritten each session and reflects only
 the current state.
 
-Last updated: 2026-08-02
+Last updated: 2026-08-30
 
 ---
 
 ## What is done
 
+- Suruchi's portrait was processed from raw images and added to the Bio page in a 2-column layout.
 - Homepage Phase 1 remains a Three.js/WebGL six-video scroll loop with cursor illumination and typography interactions.
 - "Void" has been added to the homepage as a `.suruchi-pos-4` menu item, linking to the Book Engine experiment.
 - `src/painter/` has been renamed to `src/zeroPlus/` (Zero Plus is the active production route).
@@ -31,7 +32,7 @@ Last updated: 2026-08-02
 ## What is in progress
 
 - Zero Plus is the active production route for the former Painter system.
-- Photograms is approved as an experiment and included in Vite build.
+- Afterburn is approved as an experiment and included in Vite build.
 - Beach Balloon Shooting is still in visual/game-feel tuning.
 - Control Panel V2 is a local experiment ready for curator testing.
 
@@ -41,7 +42,7 @@ Last updated: 2026-08-02
 
 - `public/poster.jpg` is still missing for the homepage fallback path.
 - The ripple effect on the homepage needs final visual review.
-- Photograms needs a final promotion rebuild under `src/photograms/`.
+- Afterburn needs a final promotion rebuild under `src/afterburn/`.
 - Beach Balloon Shooting needs curator visual review.
 - Control Panel V2 remains local-only without Supabase persistence.
 
@@ -53,7 +54,7 @@ Last updated: 2026-08-02
 2. **Cursor builds the Book Engine from `specs/book-engine.md` into production `src/`.**
 3. Curator reviews Control Panel V2 locally at `/experiments/control-panel-v2/`.
 4. Curator provides `public/poster.jpg`.
-5. Cursor rebuilds Photograms from `specs/photograms.md` into production.
+5. Cursor rebuilds Afterburn from `specs/afterburn.md` into production.
 6. Manual visual pass on all experiments and active production routes.
 
 ---

@@ -131,24 +131,20 @@
         will-change: opacity, background;
       }
 
-      /* The artwork itself — styled to look like a framed canvas */
+      /* The artwork itself — Floater Frame Setup */
       .card-inner {
         position: absolute;
         inset: 0;
         z-index: 1;
-        padding: 0; 
         box-sizing: border-box;
-        
-        /* Minimalist, elegant solid oak/walnut color. No cheap textures. */
-        border: 6px solid #8b7355; 
-        border-radius: 1px;
-
-        /* Clean, photographic drop shadow */
-        box-shadow: -8px 16px 32px rgba(0,0,0,0.4);
-          
         display: flex;
         align-items: center;
         justify-content: center;
+
+        border: 2px solid #8e6345; /* Thin wood frame */
+        background: linear-gradient(135deg, #555 0%, #1a1a1a 100%); /* Dynamic graded gray floater void */
+        box-shadow: -4px 8px 20px rgba(0,0,0,0.3), inset 2px 4px 10px rgba(0,0,0,0.5); /* Outer shadow + inset void shadow */
+        padding: 4px; /* Floater gap */
       }
       
       /* Subtle, sophisticated interior depth */

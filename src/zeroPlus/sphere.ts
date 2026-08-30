@@ -15,7 +15,7 @@ const ZERO_PLUS_IMAGES = [
 
 const PROJECTS: Project[] = [
   { title: 'Zero Plus Anything is a World', subtitle: 'Active system', url: '#' },
-  { title: 'Photograms', subtitle: 'Approved experiment awaiting production rebuild', url: '/experiments/photograms/' },
+  { title: 'Afterburn', subtitle: 'Approved experiment awaiting production rebuild', url: '/experiments/afterburn/' },
   { title: 'Project 03', subtitle: 'Coming soon', url: '#' },
   { title: 'Project 04', subtitle: 'Coming soon', url: '#' },
   { title: 'Project 05', subtitle: 'Coming soon', url: '#' },

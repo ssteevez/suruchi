@@ -865,8 +865,7 @@ const SERIES_IMAGE_ITEMS: ImageMeta[] = SERIES_LIST.map(s => ({
 const App: React.FC = () => {
   const dprRange = useMemo(() => getCanvasDprRange(), []);
   const [selectedImage, setSelectedImage] = useState<ImageMeta | null>(null);
-  const [showHelp, setShowHelp] = useState(false);
-  const [showMeta, setShowMeta] = useState(true);
+    const [showMeta, setShowMeta] = useState(true);
   const [selectedSeries, setSelectedSeries] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -966,8 +965,8 @@ const App: React.FC = () => {
           zIndex: 10,
         }}
       >
-        <button
-          onClick={() => setShowHelp((value) => !value)}
+        <a
+          href="/"
           style={{
             background: 'none',
             color: 'rgba(245,245,245,0.7)',
@@ -978,65 +977,14 @@ const App: React.FC = () => {
             border: 'none',
             padding: '8px 0',
             cursor: 'pointer',
+            textDecoration: 'none',
           }}
         >
-          {showHelp ? 'Hide Help' : 'Help'}
-        </button>
+          BACK
+        </a>
       </div>
-      <button
-        type="button"
-        onClick={() => setShowHelp((value) => !value)}
-        style={{
-          position: 'fixed',
-          right: 20,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: 32,
-          height: 32,
-          borderRadius: 999,
-          border: '1px solid rgba(240,240,240,0.55)',
-          background: 'rgba(7,7,9,0.62)',
-          color: 'rgba(245,245,245,0.94)',
-
-          fontSize: 16,
-          cursor: 'pointer',
-          zIndex: 30,
-          backdropFilter: 'blur(6px)',
-        }}
-      >
-        i
-      </button>
-      {showHelp ? (
-        <div
-          style={{
-            position: 'fixed',
-            right: 20,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: 280,
-            borderRadius: 12,
-            border: '1px solid rgba(255,255,255,0.16)',
-            background: 'rgba(7,7,9,0.9)',
-            color: 'rgba(245,245,245,0.92)',
-            padding: '14px 14px 12px 14px',
-            zIndex: 29,
-  
-            fontSize: 12,
-            lineHeight: 1.45,
-            backdropFilter: 'blur(10px)',
-          }}
-        >
-          <div style={{ fontSize: 11, letterSpacing: '0.11em', textTransform: 'uppercase', opacity: 0.84 }}>
-            Controls
-          </div>
-          <div style={{ marginTop: 8 }}>- Click & Drag: Pan around the gallery</div>
-          <div>- Scroll / Trackpad: Pan across the space</div>
-          <div>- Pinch / Cmd + Scroll: Zoom in and out</div>
-          <div>- Arrow keys: Pan around the gallery</div>
-          <div>- +/- keys: Zoom in and out</div>
-          <div>- Click an image: Enter series / View details</div>
-        </div>
-      ) : null}
+      
+      
       {selectedImage ? (
         <div
           role="dialog"

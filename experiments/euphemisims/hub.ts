@@ -13,12 +13,22 @@ for (const work of WORKS) {
   const frameWrap = document.createElement('div');
   frameWrap.className = 'thumbnail-video-wrap';
   
+  // Make the thumbnail background stark white for letterboxing/pillarboxing
+  frameWrap.style.backgroundColor = '#ffffff';
+
   const img = document.createElement('img');
   img.src = `/images/poet/thumbnails/${work.slug}.jpg`;
   img.className = 'thumbnail-video'; // We can reuse the class for now
   img.style.width = '100%';
   img.style.height = '100%';
-  img.style.objectFit = 'cover';
+  
+  // Specific override: "The Thing To Do" was perfectly cropped before, retain that
+  if (work.slug === 'the-thing-to-do') {
+    img.style.objectFit = 'cover';
+  } else {
+    img.style.objectFit = 'contain';
+  }
+  
   img.style.transform = 'none'; // Overriding the scale(0.5) from iframe CSS
   img.alt = work.title;
   

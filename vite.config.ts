@@ -14,7 +14,7 @@ export default defineConfig({
         painter: 'painter.html',
         zeroPlus: 'zero-plus.html',
         afterImage: 'after-image.html',
-        photograms: 'experiments/photograms/index.html',
+        afterburn: 'experiments/afterburn/index.html',
         beachShooting: 'experiments/beach-shooting/index.html',
         euphemisims: 'experiments/euphemisims/index.html',
         euphemisimsWork: 'experiments/euphemisims/work.html',

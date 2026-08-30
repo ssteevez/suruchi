@@ -10,7 +10,7 @@ import type { TextureData } from './textureManager';
 const PAGE_WIDTH = 3.24;
 const PAGE_HEIGHT = 3.0;
 const TOTAL_PAGES = 7;
-const PURCHASE_URL = "https://www.instagram.com/suruchichoksi/?hl=en";
+const PURCHASE_URL = "https://shunya-prajna.netlify.app";
 
 // Pre-create geometry so x=0 is the spine
 // Physical paper thickness set to 0.003 (exaggerated slightly for perceptual edge visibility)
@@ -774,6 +774,18 @@ const BookEngine = () => {
     };
     
     const handleWheel = (e: WheelEvent) => {
+      // If page is natively scrolled down (reading text), allow ALL scrolling 
+      // (up or down) without turning pages, until they reach the very top.
+      if (window.scrollY > 10) {
+        return;
+      }
+
+      // If book is finished and scrolling down, allow native page scroll to text
+      if (currentPage >= TOTAL_PAGES - 1 && e.deltaY > 0) {
+        return; 
+      }
+      
+      // Otherwise, prevent default and use wheel to turn pages
       e.preventDefault(); 
       const now = performance.now();
       if (now - lastEventTimeRef.current < 400) return;
@@ -781,9 +793,6 @@ const BookEngine = () => {
       if (e.deltaY > 20) {
         if (currentPage < TOTAL_PAGES - 1) {
           setCurrentPage(p => p + 1);
-        } else {
-          // Loop back to the start
-          setCurrentPage(0);
         }
         lastEventTimeRef.current = now;
       } else if (e.deltaY < -20 && currentPage > 0) {
@@ -792,12 +801,44 @@ const BookEngine = () => {
       }
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept if they are scrolled down natively
+      if (window.scrollY > 10) return;
+      
+      if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', ' '].includes(e.key)) {
+        // Only prevent default if we are controlling the book
+        if ((e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') && currentPage >= TOTAL_PAGES - 1) {
+          // Let native scroll happen when book is at the end and they press down/right/space
+          return;
+        }
+
+        e.preventDefault();
+        const now = performance.now();
+        if (now - lastEventTimeRef.current < 200) return;
+
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+          if (currentPage < TOTAL_PAGES - 1) {
+            setCurrentPage(p => p + 1);
+          }
+          lastEventTimeRef.current = now;
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          if (currentPage > 0) {
+            setCurrentPage(p => p - 1);
+          }
+          lastEventTimeRef.current = now;
+        }
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('keydown', handleKeyDown, { passive: false });
+    
     return () => {
       window.removeEventListener('tuning-updated', handleTuningUpdate);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [currentPage]);
   
@@ -978,80 +1019,160 @@ const App = () => {
   return (
     <div style={{ 
       width: '100vw', 
-      height: '100vh', 
+      minHeight: '200vh', 
       background: '#2c2c2c',
-      overflow: 'hidden',
       fontFamily: '"Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif'
     }}>
       
-      <div className="header-title">
-        EMPTYING THE VOID
-      </div>
+      {/* STICKY BOOK CONTAINER */}
+      <div style={{ position: 'sticky', top: 0, width: '100vw', height: '100vh', overflow: 'hidden' }}>
+        <div className="header-container">
+          <div className="header-title">
+            EMPTYING THE VOID
+          </div>
+        </div>
 
-      <a href="/poet.html" className="back-btn">
-        BACK
-      </a>
-
-      {/* Buy the Book CTA */}
-      <a 
-        href={PURCHASE_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          position: 'fixed',
-          top: '84px',
+        <div style={{
+          position: 'absolute',
           right: '84px',
-          zIndex: 1000,
-          color: 'rgba(245, 245, 245, 0.82)',
-          fontFamily: '"Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif',
-          fontSize: '11px',
-          fontWeight: 500,
-          letterSpacing: '0.15em',
-          textDecoration: 'none',
-          paddingBottom: '4px',
-          borderBottom: '1px solid rgba(245, 245, 245, 0.3)',
-          transition: 'all 0.3s ease',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 100,
           pointerEvents: 'auto',
-          cursor: 'pointer',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderBottomColor = 'rgba(245, 245, 245, 0.82)';
-          e.currentTarget.style.textShadow = '0 0 12px rgba(255, 255, 255, 0.3)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderBottomColor = 'rgba(245, 245, 245, 0.3)';
-          e.currentTarget.style.textShadow = 'none';
-        }}
-        onFocus={(e) => {
-          e.currentTarget.style.outline = '1px solid rgba(245, 245, 245, 0.6)';
-          e.currentTarget.style.outlineOffset = '6px';
-        }}
-        onBlur={(e) => {
-          e.currentTarget.style.outline = 'none';
-        }}
-      >
-        BUY THE BOOK ↗
-      </a>
+          maxWidth: '300px',
+          textAlign: 'right',
+          fontFamily: '"Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif'
+        }}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '13px', color: 'rgba(245,245,245,0.6)', lineHeight: 1.6 }}>
+            <li style={{ marginBottom: '4px' }}><strong>Edition:</strong> 300</li>
+            <li style={{ marginBottom: '4px' }}><strong>Year:</strong> 2024</li>
+            <li style={{ marginBottom: '4px' }}><strong>Dimensions:</strong> 10.5 x 10.5 inches</li>
+            <li style={{ marginBottom: '4px' }}><strong>Pages:</strong> 208</li>
+            <li style={{ marginBottom: '4px' }}><strong>Materials:</strong> Paper, Gateway Paper, Thread, Wax Seal, Metallic Paper, Film</li>
+            <li style={{ marginBottom: '4px' }}><strong>Printing:</strong> Offset + Screen Printing</li>
+            <li style={{ marginBottom: '4px' }}><strong>Binding:</strong> Coptic Binding</li>
+            <li style={{ marginBottom: '4px' }}><strong>Publisher:</strong> Self-published</li>
+            <li style={{ marginBottom: '4px' }}><strong>ISBN:</strong> 978-93-341-6113-7</li>
+            <li style={{ marginBottom: '4px' }}><strong>Price:</strong> USD 250</li>
+          </ul>
+        </div>
 
-      {/* Interaction Instructions */}
-      <div style={{
-        position: 'fixed',
-        bottom: 34,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        textAlign: 'center',
-        color: 'rgba(245, 245, 245, 0.44)',
-        fontSize: 12,
-        letterSpacing: '0.18em',
-        textTransform: 'uppercase',
-        lineHeight: 1.8,
-        zIndex: 1000,
-        pointerEvents: 'none'
-      }}>
-        <div>Scroll to open and read</div>
+        <a href="/poet.html" className="back-btn">
+          BACK
+        </a>
+
+        {/* Buy the Book CTA */}
+        <a 
+          href={PURCHASE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            position: 'absolute',
+            top: '84px',
+            right: '84px',
+            zIndex: 1000,
+            color: 'rgba(245, 245, 245, 0.82)',
+            fontFamily: '"Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif',
+            fontSize: '11px',
+            fontWeight: 500,
+            letterSpacing: '0.15em',
+            textDecoration: 'none',
+            paddingBottom: '4px',
+            borderBottom: '1px solid rgba(245, 245, 245, 0.3)',
+            transition: 'all 0.3s ease',
+            pointerEvents: 'auto',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderBottomColor = 'rgba(245, 245, 245, 0.82)';
+            e.currentTarget.style.textShadow = '0 0 12px rgba(255, 255, 255, 0.3)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderBottomColor = 'rgba(245, 245, 245, 0.3)';
+            e.currentTarget.style.textShadow = 'none';
+          }}
+        >
+          BUY THE BOOK ↗
+        </a>
+
+        {/* Read About Project CTA */}
+        <div style={{
+          position: 'absolute',
+          bottom: '36px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '16px'
+        }}>
+          <div style={{
+            color: 'rgba(245, 245, 245, 0.44)',
+            fontSize: 12,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            pointerEvents: 'none',
+            textAlign: 'center'
+          }}>
+            Scroll or use arrow keys<br/>to open and read
+          </div>
+          <button 
+            onClick={() => {
+              const el = document.getElementById('project-text');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(245,245,245,0.3)',
+              color: 'rgba(245, 245, 245, 0.82)',
+              fontFamily: '"Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif',
+              fontSize: '11px',
+              fontWeight: 500,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              padding: '10px 24px',
+              borderRadius: '24px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              pointerEvents: 'auto',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'rgba(245, 245, 245, 0.82)';
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'rgba(245, 245, 245, 0.3)';
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            Read About Project ↓
+          </button>
+        </div>
+
+        <BookEngine />
       </div>
 
-      <BookEngine />
+      {/* THE TEXT CONTENT BELOW */}
+      <div id="project-text" style={{
+        padding: '120px 84px',
+        maxWidth: '900px',
+        margin: '0 auto',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        fontFamily: '"Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif'
+      }}>
+        <h2 style={{ fontSize: '42px', fontWeight: 400, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '40px', color: '#fff' }}>Emptying the Void</h2>
+        <div style={{ color: 'rgba(245,245,245,0.85)', fontSize: '24px', lineHeight: 1.6, fontWeight: 300 }}>
+          <p style={{ marginBottom: '1.5em' }}><em>Emptying the Void</em> is a book to hold, and to feel held by. In emptying itself of "I", it makes room for love. Its poems offer refuge and revelation—a way to confront fear and embrace fragility. Absence and presence, words and silence: each illuminating the other.</p>
+          <p style={{ marginBottom: '1.5em' }}>The passages echo our shared humanity. The boundaries between self and other begin to soften, revealing our place within the intricate weave of all that exists. Rather than seeking answers, the book lingers with uncertainty, inviting moments of quiet recognition.</p>
+          <p style={{ marginBottom: '1.5em' }}>The poems become sculptures of language, where meaning and form intertwine. Each poem is a universe unto itself, waiting to be entered, explored, and perhaps, carried along. Words share the page with photographs, abstract imagery, asemic writing, and silence, allowing meaning to emerge as much through absence as through what is spoken.</p>
+          <p style={{ marginBottom: '1.5em' }}>The making of the book is woven into its material presence. The paper mill and its workers, the tree that offered its body, the rain and sunlight that nourished its growth, and the many hands that shaped this book—their stories live within the fibres of even the seemingly empty pages. Crumpled butter paper, thread-work, pinholes and punctures, handwritten poems, debossed words and deconstructed text each become part of the book's language.</p>
+          <p style={{ marginBottom: '1.5em' }}>Even its form asks for intimacy. The exposed spine allows the book to rest open before the reader, inviting them to sit with it as they would with an old friend. Every element, from the materials to the spaces between the words, asks to be encountered slowly. It is in this stillness that <em>Emptying the Void</em> quietly reveals itself.</p>
+        </div>
+      </div>
     </div>
   );
 };
