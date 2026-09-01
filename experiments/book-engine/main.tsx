@@ -465,10 +465,10 @@ const RigidCard = ({ index }: { index: number }) => {
     <group ref={groupRef}>
       <mesh position={[PAGE_WIDTH / 2, 0, 0.04 / 2]} castShadow receiveShadow>
         <boxGeometry args={[PAGE_WIDTH, PAGE_HEIGHT, 0.04]} />
-        <meshStandardMaterial attach="material-0" color="#111111" roughness={0.9} />
-        <meshStandardMaterial attach="material-1" color="#111111" roughness={0.9} />
-        <meshStandardMaterial attach="material-2" color="#111111" roughness={0.9} />
-        <meshStandardMaterial attach="material-3" color="#111111" roughness={0.9} />
+        <meshStandardMaterial attach="material-0" color="#eeeeee" roughness={0.9} />
+        <meshStandardMaterial attach="material-1" color="#eeeeee" roughness={0.9} />
+        <meshStandardMaterial attach="material-2" color="#eeeeee" roughness={0.9} />
+        <meshStandardMaterial attach="material-3" color="#eeeeee" roughness={0.9} />
         <meshStandardMaterial 
           attach="material-4" 
           map={textureData ? textureData.tex : dummyTex}
@@ -1053,7 +1053,10 @@ const App = () => {
             <li style={{ marginBottom: '4px' }}><strong>Binding:</strong> Coptic Binding</li>
             <li style={{ marginBottom: '4px' }}><strong>Publisher:</strong> Self-published</li>
             <li style={{ marginBottom: '4px' }}><strong>ISBN:</strong> 978-93-341-6113-7</li>
-            <li style={{ marginBottom: '4px' }}><strong>Price:</strong> USD 250</li>
+            <li style={{ marginBottom: '4px' }}>
+              <strong>Price:</strong> 15,000 INR (India)<br/>
+              <span style={{ paddingLeft: '44px' }}>USD 250 (elsewhere)</span>
+            </li>
           </ul>
         </div>
 
@@ -1061,39 +1064,73 @@ const App = () => {
           BACK
         </a>
 
-        {/* Buy the Book CTA */}
-        <a 
-          href={PURCHASE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            position: 'absolute',
-            top: '84px',
-            right: '84px',
-            zIndex: 1000,
-            color: 'rgba(245, 245, 245, 0.82)',
-            fontFamily: '"Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif',
-            fontSize: '11px',
-            fontWeight: 500,
-            letterSpacing: '0.15em',
-            textDecoration: 'none',
-            paddingBottom: '4px',
-            borderBottom: '1px solid rgba(245, 245, 245, 0.3)',
-            transition: 'all 0.3s ease',
-            pointerEvents: 'auto',
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderBottomColor = 'rgba(245, 245, 245, 0.82)';
-            e.currentTarget.style.textShadow = '0 0 12px rgba(255, 255, 255, 0.3)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderBottomColor = 'rgba(245, 245, 245, 0.3)';
-            e.currentTarget.style.textShadow = 'none';
-          }}
-        >
-          BUY THE BOOK ↗
-        </a>
+        {/* Action Buttons */}
+        <div style={{
+          position: 'absolute',
+          top: '84px',
+          right: '84px',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          gap: '16px',
+          pointerEvents: 'auto',
+        }}>
+          <a 
+            href="https://shunya-prajna.netlify.app/#acquire"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: 'rgba(245, 245, 245, 0.82)',
+              fontFamily: '"Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif',
+              fontSize: '11px',
+              fontWeight: 500,
+              letterSpacing: '0.15em',
+              textDecoration: 'none',
+              paddingBottom: '4px',
+              borderBottom: '1px solid rgba(245, 245, 245, 0.3)',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderBottomColor = 'rgba(245, 245, 245, 0.82)';
+              e.currentTarget.style.textShadow = '0 0 12px rgba(255, 255, 255, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderBottomColor = 'rgba(245, 245, 245, 0.3)';
+              e.currentTarget.style.textShadow = 'none';
+            }}
+          >
+            BUY BOOK ↗
+          </a>
+          <a 
+            href="https://shunya-prajna.netlify.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: 'rgba(245, 245, 245, 0.82)',
+              fontFamily: '"Neue Haas Grotesk Text Pro", "Suisse Intl", "Avenir Next", "Helvetica Neue", Arial, sans-serif',
+              fontSize: '11px',
+              fontWeight: 500,
+              letterSpacing: '0.15em',
+              textDecoration: 'none',
+              paddingBottom: '4px',
+              borderBottom: '1px solid rgba(245, 245, 245, 0.3)',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderBottomColor = 'rgba(245, 245, 245, 0.82)';
+              e.currentTarget.style.textShadow = '0 0 12px rgba(255, 255, 255, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderBottomColor = 'rgba(245, 245, 245, 0.3)';
+              e.currentTarget.style.textShadow = 'none';
+            }}
+          >
+            VISIT SITE ↗
+          </a>
+        </div>
 
         {/* Read About Project CTA */}
         <div style={{

@@ -92,14 +92,23 @@ const App = () => {
     if (CALIBRATION_MODE !== 'NONE' || ARTWORKS.length === 0) {
       return [{ x: 0, y: 0, scale: 1 }];
     }
-    const arr = [{ x: 0, y: 0, scale: 1 }]; // Start Overview
+    
+    const wrapperH = windowSize.w / IMAGE_ASPECT_RATIO;
+    // We want the top edge of the scaled wrapper to clear the title.
+    // Title is at top 76px, font size 34px -> bottom is ~110px.
+    // Safe top clearance = 130px.
+    // Since wrapper is centered, its top edge is at (windowSize.h - wrapperH * scale) / 2.
+    // We want (windowSize.h - wrapperH * scale) / 2 >= 130  =>  wrapperH * scale <= windowSize.h - 260
+    const safeOverviewScale = Math.min(1, Math.max(0.2, (windowSize.h - 260) / wrapperH));
+    
+    const arr = [{ x: 0, y: 0, scale: safeOverviewScale }]; // Start Overview
 
     ARTWORKS.forEach((box) => {
       const cx = box.x + box.w / 2;
       const cy = box.y + box.h / 2;
       
       const boxWidthPx = (box.w / 100) * windowSize.w;
-      const boxHeightPx = (box.h / 100) * (windowSize.w / IMAGE_ASPECT_RATIO);
+      const boxHeightPx = (box.h / 100) * wrapperH;
 
       const maxW = windowSize.w < 768 ? 0.85 : 0.45; 
       const maxH = windowSize.w < 768 ? 0.70 : 0.65; 
@@ -115,7 +124,7 @@ const App = () => {
       arr.push({ x: tx, y: ty, scale: targetScale });
     });
 
-    arr.push({ x: 0, y: 0, scale: 1 }); // End Overview
+    arr.push({ x: 0, y: 0, scale: safeOverviewScale }); // End Overview
     return arr;
   }, [windowSize]);
 
@@ -446,16 +455,17 @@ const App = () => {
                 return (
                   <div key={`left-${box.id}`} style={{
                     position: 'absolute', left: `${box.x}%`, top: `${box.y}%`, width: `${box.w}%`, height: `${box.h}%`, display: 'block',
-                    boxShadow: '4px 8px 20px rgba(0,0,0,0.3), inset 2px 4px 10px rgba(0,0,0,0.5)', // Outer shadow + inset shadow for the void
-                    border: '0.5px solid #000', // Thin wood frame
+                    boxShadow: '-4px 8px 20px rgba(0,0,0,0.3), inset 2px 4px 10px rgba(0,0,0,0.5)', // Outer shadow + inset shadow for the void
+                    border: '1.5px solid #8e6345', // Thin wood frame matched to zero-plus
                     background: 'linear-gradient(135deg, #555 0%, #1a1a1a 100%)', // Dynamic graded gray floater void
-                    padding: '3px', // Floater gap
+                    padding: '4px', // Floater gap matched to zero-plus
                     boxSizing: 'border-box'
                   }}>
                     {/* The Artwork Stretched Canvas */}
                     <picture style={{ width: '100%', height: '100%', display: 'block', position: 'relative', boxShadow: '1px 2px 6px rgba(0,0,0,0.9)' }}>
                       <source srcSet={srcWebp} type="image/webp" />
                       <img src={srcJpg} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} draggable={false} />
+                      <div style={{ position: 'absolute', inset: 0, boxShadow: 'inset 0 0 10px rgba(0,0,0,0.8)', pointerEvents: 'none' }} />
                     </picture>
 
                     {/* Dimension Label (only visible when zoomed in on this specific artwork) */}
@@ -510,16 +520,17 @@ const App = () => {
                 return (
                   <div key={`right-${box.id}`} style={{
                     position: 'absolute', left: `${box.x}%`, top: `${box.y}%`, width: `${box.w}%`, height: `${box.h}%`, display: 'block',
-                    boxShadow: '4px 8px 20px rgba(0,0,0,0.3), inset 2px 4px 10px rgba(0,0,0,0.5)', // Outer shadow + inset shadow for the void
-                    border: '0.5px solid #000', // Thin wood frame
+                    boxShadow: '-4px 8px 20px rgba(0,0,0,0.3), inset 2px 4px 10px rgba(0,0,0,0.5)', // Outer shadow + inset shadow for the void
+                    border: '1.5px solid #8e6345', // Thin wood frame matched to zero-plus
                     background: 'linear-gradient(135deg, #555 0%, #1a1a1a 100%)', // Dynamic graded gray floater void
-                    padding: '3px', // Floater gap
+                    padding: '4px', // Floater gap matched to zero-plus
                     boxSizing: 'border-box'
                   }}>
                     {/* The Artwork Stretched Canvas */}
                     <picture style={{ width: '100%', height: '100%', display: 'block', position: 'relative', boxShadow: '1px 2px 6px rgba(0,0,0,0.9)' }}>
                       <source srcSet={srcWebp} type="image/webp" />
                       <img src={srcJpg} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} draggable={false} />
+                      <div style={{ position: 'absolute', inset: 0, boxShadow: 'inset 0 0 10px rgba(0,0,0,0.8)', pointerEvents: 'none' }} />
                     </picture>
 
                     {/* Dimension Label (only visible when zoomed in on this specific artwork) */}

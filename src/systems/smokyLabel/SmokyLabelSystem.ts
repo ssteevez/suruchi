@@ -272,53 +272,25 @@ export const createSmokyLabelSystem = (
     const available = states.filter((s) => !s.isSmoking && !s.disableShuffle);
     if (available.length < positions.length || positions.length < 2) return;
 
-    let moves: { state: SmokyLabelState, oldClass: string, newClass: string }[] = [];
-
-    if (positions.length === 2) {
-      // Just swap the two items
-      const m0 = available[0]!;
-      const m1 = available[1]!;
-      const pos0 = positions.find(p => m0.element.classList.contains(p));
-      const pos1 = positions.find(p => m1.element.classList.contains(p));
-      if (!pos0 || !pos1) return;
-      
-      moves = [
-        { state: m0, oldClass: pos0, newClass: pos1 },
-        { state: m1, oldClass: pos1, newClass: pos0 }
-      ];
-    } else if (positions.length === 3) {
-      // Pick exactly two random items to move
-      const indices = [0, 1, 2];
-      for (let i = indices.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [indices[i], indices[j]] = [indices[j] as number, indices[i] as number];
-      }
-      const toMove = [available[indices[0] as number] as SmokyLabelState, available[indices[1] as number] as SmokyLabelState];
-      const stationary = available[indices[2] as number] as SmokyLabelState;
-
-      const stationaryPos = positions.find(p => stationary.element.classList.contains(p));
-      if (!stationaryPos) return;
-
-      const remainingPositions = positions.filter(p => p !== stationaryPos);
-      const validPairs: [string, string][] = [];
-      
-      if (remainingPositions.length === 2) {
-        validPairs.push([remainingPositions[0] as string, remainingPositions[1] as string]);
-        validPairs.push([remainingPositions[1] as string, remainingPositions[0] as string]);
-      }
-
-      if (validPairs.length === 0) return;
-
-      const chosenPair = validPairs[Math.floor(Math.random() * validPairs.length)] as [string, string];
-      
-      const oldClass0 = positions.find(p => toMove[0]!.element.classList.contains(p)) || '';
-      const oldClass1 = positions.find(p => toMove[1]!.element.classList.contains(p)) || '';
-
-      moves = [
-        { state: toMove[0]!, oldClass: oldClass0, newClass: chosenPair[0] },
-        { state: toMove[1]!, oldClass: oldClass1, newClass: chosenPair[1] },
-      ];
+    // Pick exactly two random items to move
+    const indices = Array.from({ length: available.length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j] as number, indices[i] as number];
     }
+    
+    const m0 = available[indices[0] as number] as SmokyLabelState;
+    const m1 = available[indices[1] as number] as SmokyLabelState;
+    
+    const pos0 = positions.find(p => m0.element.classList.contains(p));
+    const pos1 = positions.find(p => m1.element.classList.contains(p));
+    
+    if (!pos0 || !pos1) return;
+    
+    let moves = [
+      { state: m0, oldClass: pos0, newClass: pos1 },
+      { state: m1, oldClass: pos1, newClass: pos0 }
+    ];
 
     moves.forEach(m => {
       if (!m.oldClass || !m.newClass) return;

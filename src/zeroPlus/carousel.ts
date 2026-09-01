@@ -17,15 +17,16 @@ export interface Carousel {
 }
 
 const ZERO_PLUS_IMAGES = [
-  '/images/painter/zero-plus/IMG_0695.jpg',
-  '/images/painter/zero-plus/IMG_0696.jpg',
-  '/images/painter/zero-plus/IMG_0697.jpg',
-  '/images/painter/zero-plus/IMG_0698.jpg',
-  '/images/painter/zero-plus/IMG_3067.jpg',
-  '/images/painter/zero-plus/IMG_5028.jpg'
+  '/images/painter/zero-plus/Zero Plus Anything is a World - I.jpg',
+  '/images/painter/zero-plus/Zero Plus Anything is a World - II.jpg',
+  '/images/painter/zero-plus/Zero Plus Anything is a World - III.jpg',
+  '/images/painter/zero-plus/Zero Plus Anything is a World - IV.jpg',
+  '/images/painter/zero-plus/Zero Plus Anything is a World - V.jpg',
+  '/images/painter/zero-plus/Zero Plus Anything is a World - VI.jpg',
+  '/images/painter/zero-plus/Zero Plus Anything is a World - VII.jpg'
 ];
 
-const IMAGE_COUNT = 6;
+const IMAGE_COUNT = 7;
 const ADVANCE_THRESHOLD = 80;
 const CREDIT_RESET_GAP_MS = 360;
 const ADVANCE_LOCKOUT_MS = 250;
@@ -413,6 +414,9 @@ export function initCarousel(): Carousel {
   }
 
   let currentLightboxIndex = -1;
+  const bgArtworksContainer = document.getElementById('lightbox-background-artworks') as HTMLElement | null;
+
+  const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 
   const openLightbox = (index: number): void => {
     currentLightboxIndex = index;
@@ -420,10 +424,73 @@ export function initCarousel(): Carousel {
     if (!img) return;
     lbImg.src = img.src;
     lbImg.alt = img.alt;
-    lbTitle.textContent = `Untitled Painting ${index + 1}`;
-    lbMeta.textContent = 'Oil / Acrylic placeholder · Year placeholder · Size placeholder';
-    lbCaption.textContent =
-      'Placeholder curatorial text. This section will include title context, process notes, and interpretive description for this painting.';
+    
+    const numeral = numerals[index] || (index + 1).toString();
+    lbTitle.textContent = `Zero plus anything ${numeral}`;
+    
+    const isLarge = index >= 5; // I-V are 36x48, VI-VII are 48x72
+    const sizeStr = isLarge ? '48 × 72 in' : '36 × 48 in';
+    lbMeta.textContent = `2024 · Mixed media · ${sizeStr}`;
+    lbCaption.textContent = ''; // Remove placeholder curatorial text
+    lbCaption.style.display = 'none'; // Hide the empty caption element
+    
+    // Scale mathematically to physical dimensions relative to the gallery wall.
+    // The new zoomed background fits the hero perfectly at a larger scale.
+    // Scale mathematically to maximize size WITHOUT spilling off the physical wall in the image.
+    // The floating wall in the background is about 50vh tall.
+    // We use a different scale factor for smaller paintings so they don't look lost on the wall.
+    const physicalHeightInches = isLarge ? 72 : 48;
+    const scaleFactor = isLarge ? 0.55 : 0.75;
+    const vhHeight = physicalHeightInches * scaleFactor;
+    lbImg.style.height = `${vhHeight}vh`;
+    lbImg.style.maxHeight = 'none';
+    
+    // Update the side wall text to map perfectly to the 2D image
+    const wallTextContainer = document.getElementById('lightbox-wall-text');
+    if (wallTextContainer) {
+      wallTextContainer.innerHTML = '';
+      
+      // LEFT WALL: TITLE (Bigger)
+      const leftTextDiv = document.createElement('div');
+      leftTextDiv.className = 'wall-text-content';
+      leftTextDiv.style.left = '15vw'; 
+      leftTextDiv.style.top = '42vh';
+      leftTextDiv.style.width = '25vw';
+      leftTextDiv.style.textAlign = 'right'; // Read towards the center
+      // rotateY(50deg) pushes the right edge into the screen, matching left wall slope
+      leftTextDiv.style.transform = `translate(-50%, -50%) perspective(800px) rotateY(50deg)`;
+      
+      const h2 = document.createElement('h2');
+      h2.className = 'wall-text-title';
+      h2.style.fontSize = '3.5rem'; // Much bigger
+      h2.style.margin = '0';
+      h2.style.lineHeight = '1.0';
+      h2.style.color = '#222';
+      h2.innerHTML = `ZERO PLUS<br/>ANYTHING<br/>${numeral}`;
+      
+      leftTextDiv.appendChild(h2);
+      wallTextContainer.appendChild(leftTextDiv);
+      
+      // RIGHT WALL: DETAILS
+      const rightTextDiv = document.createElement('div');
+      rightTextDiv.className = 'wall-text-content';
+      rightTextDiv.style.left = '85vw'; 
+      rightTextDiv.style.top = '42vh';
+      rightTextDiv.style.width = '25vw';
+      // rotateY(-50deg) pushes the left edge into the screen, matching right wall slope
+      rightTextDiv.style.transform = `translate(-50%, -50%) perspective(800px) rotateY(-50deg)`;
+      
+      const p = document.createElement('p');
+      p.className = 'wall-text-meta';
+      p.style.fontSize = '1.5rem';
+      p.style.margin = '0';
+      p.style.color = '#555';
+      p.style.lineHeight = '1.6';
+      p.innerHTML = `2024<br/>MIXED MEDIA<br/>${sizeStr}`; // Stacked details look elegant on the wall
+      
+      rightTextDiv.appendChild(p);
+      wallTextContainer.appendChild(rightTextDiv);
+    }
     
     if (!state.isOpen) {
       lightbox.classList.add('open');

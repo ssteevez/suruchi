@@ -118,8 +118,9 @@ if (prefersReducedMotion || isCoarsePointer || !webglAvailable) {
 
 
     .suruchi-pos-1 { position: fixed; top: 76px; left: 84px; font-weight: 500; font-size: 45px; }
-    .suruchi-pos-2 { position: fixed; top: 76px; left: 50%; transform: translateX(-50%); text-align: center; font-weight: 500; font-size: 45px; }
-    .suruchi-pos-3 { position: fixed; top: 76px; right: 84px; text-align: right; font-weight: 500; font-size: 45px; }
+    .suruchi-pos-2 { position: fixed; top: 76px; left: calc(84px + (100vw - 168px) * 0.333333); transform: translateX(-50%); text-align: center; font-weight: 500; font-size: 45px; }
+    .suruchi-pos-3 { position: fixed; top: 76px; left: calc(84px + (100vw - 168px) * 0.666666); transform: translateX(-50%); text-align: center; font-weight: 500; font-size: 45px; }
+    .suruchi-pos-4 { position: fixed; top: 76px; right: 84px; text-align: right; font-weight: 500; font-size: 45px; }
 
     .suruchi-pos-bottom-1 { position: fixed; bottom: 24px; left: 84px; font-weight: 500; font-size: 22px; }
     .suruchi-pos-bottom-2 { position: fixed; bottom: 24px; right: 84px; text-align: right; font-weight: 500; font-size: 22px; }
@@ -168,6 +169,7 @@ if (prefersReducedMotion || isCoarsePointer || !webglAvailable) {
     <div class="suruchi-corner-item suruchi-pos-1"><span class="suruchi-label">Pilgrim</span></div>
     <div class="suruchi-corner-item suruchi-pos-2"><span class="suruchi-label">Poet</span></div>
     <div class="suruchi-corner-item suruchi-pos-3"><span class="suruchi-label">Painter</span></div>
+    <div class="suruchi-corner-item suruchi-pos-4 suruchi-books"><span class="suruchi-label">Books</span></div>
     <div class="suruchi-corner-item suruchi-pos-bottom-1"><span class="suruchi-label">Bio</span></div>
     <div class="suruchi-corner-item suruchi-pos-bottom-2"><span class="suruchi-label">Contact</span></div>
   `;
@@ -193,16 +195,18 @@ if (prefersReducedMotion || isCoarsePointer || !webglAvailable) {
   const poetItem = cornerFrame.querySelector<HTMLElement>('.suruchi-pos-2');
   const pilgrimItem = cornerFrame.querySelector<HTMLElement>('.suruchi-pos-1');
   const painterItem = cornerFrame.querySelector<HTMLElement>('.suruchi-pos-3');
+  const booksItem = cornerFrame.querySelector<HTMLElement>('.suruchi-pos-4');
   
   const bioItem = cornerFrame.querySelector<HTMLElement>('.suruchi-pos-bottom-1');
   const contactItem = cornerFrame.querySelector<HTMLElement>('.suruchi-pos-bottom-2');
 
-  const smokySystemTop = poetItem && painterItem && pilgrimItem
+  const smokySystemTop = poetItem && painterItem && pilgrimItem && booksItem
     ? createSmokyLabelSystem([
         { element: poetItem, word: 'POET', href: '/poet.html' },
         { element: painterItem, word: 'PAINTER', href: '/painter.html' },
         { element: pilgrimItem, word: 'PILGRIM', href: '/pilgrim.html' },
-      ], ['suruchi-pos-1', 'suruchi-pos-2', 'suruchi-pos-3'])
+        { element: booksItem, word: 'BOOKS', href: 'https://shunya-prajna.netlify.app/' },
+      ], ['suruchi-pos-1', 'suruchi-pos-2', 'suruchi-pos-3', 'suruchi-pos-4'])
     : null;
 
   const smokySystemBottom = bioItem && contactItem
@@ -331,9 +335,16 @@ if (prefersReducedMotion || isCoarsePointer || !webglAvailable) {
         const scale = 1 + influence * 0.18 + velocityStrength * 0.05;
         const charOpacity = 0.84 + influence * 0.16;
 
-        char.style.transform = `translate(${shiftX.toFixed(2)}px, ${shiftY.toFixed(
+        let finalScale = scale;
+        let finalShiftY = shiftY;
+
+        if (item.classList.contains('suruchi-books')) {
+          finalScale = scale * 1.15;
+        }
+
+        char.style.transform = `translate(${shiftX.toFixed(2)}px, ${finalShiftY.toFixed(
           2
-        )}px) scale(${scale.toFixed(3)})`;
+        )}px) scale(${finalScale.toFixed(3)})`;
         char.style.opacity = charOpacity.toFixed(3);
       });
 
@@ -343,14 +354,35 @@ if (prefersReducedMotion || isCoarsePointer || !webglAvailable) {
         0,
         Math.min(1, (averageInfluence - invertStart) / (1 - invertStart))
       );
-      const channel = Math.round(245 * (1 - invertAmount));
-      item.style.opacity = `${(0.82 + averageInfluence * 0.18).toFixed(3)}`;
-      item.style.color = `rgba(${channel}, ${channel}, ${channel}, 0.96)`;
-      item.style.textShadow = `0 0 ${(8 + averageInfluence * 24).toFixed(
-        2
-      )}px rgba(255,255,255,${(0.12 + averageInfluence * 0.42 - invertAmount * 0.36).toFixed(
-        3
-      )})`;
+      if (item.classList.contains('suruchi-books')) {
+        // Pop out more! Base opacity 1.0
+        item.style.opacity = `${(1.0).toFixed(3)}`;
+        
+        // Base: Brown #a8794d (168, 121, 77)
+        // Hover: Red #8a2b22 (138, 43, 34)
+        const r = Math.round(168 + (138 - 168) * invertAmount);
+        const g = Math.round(121 + (43 - 121) * invertAmount);
+        const b = Math.round(77 + (34 - 77) * invertAmount);
+        
+        item.style.color = `rgba(${r}, ${g}, ${b}, 1.0)`;
+        
+        // Massive boosted glow to demand attention
+        const pulseGlow = (Math.sin(timeMs * 0.005) + 1) / 2; // 0 to 1
+        const glowOpacity = (0.6 + pulseGlow * 0.3 + averageInfluence * 0.1).toFixed(3);
+        const glowRadius = (32 + pulseGlow * 16 + averageInfluence * 24).toFixed(2);
+        const innerRadius = (16 + pulseGlow * 8).toFixed(2);
+        
+        item.style.textShadow = `0 0 ${innerRadius}px rgba(${r}, ${g}, ${b}, ${glowOpacity}), 0 0 ${glowRadius}px rgba(${r}, ${g}, ${b}, ${glowOpacity})`;
+      } else {
+        item.style.opacity = `${(0.82 + averageInfluence * 0.18).toFixed(3)}`;
+        const channel = Math.round(245 * (1 - invertAmount));
+        item.style.color = `rgba(${channel}, ${channel}, ${channel}, 0.96)`;
+        item.style.textShadow = `0 0 ${(8 + averageInfluence * 24).toFixed(
+          2
+        )}px rgba(255, 255, 255, ${(0.12 + averageInfluence * 0.42 - invertAmount * 0.36).toFixed(
+          3
+        )})`;
+      }
     }
 
     rafId = window.requestAnimationFrame(loop);
